@@ -202,9 +202,10 @@ ggplot(m1_aug, aes(x = .fitted, y = .resid)) +
 ```
 We can see that the linear assumption is violated since the data is not symmetrically distributed observations around the horizontal axis. We may assume that the dataset has some independence. For example, the movie with the same director or writer, or the star in the movie may lead to higher budget or gross values, such that this movie-specific relatioinship violates independence.
 
+## Linear Mixed Model & Random Effect
+Based on the above violations, we want to apply linear mixed model to our datasets to further explore our questions. We want to look at the assiociations between our interested variables, and random  effect due to country. 
 
-## Predicting moves' gross
-```{r prediction-gross, message = F, warning = F}
+```{r random-effect, message = F, warning = F}
  
 ```
 
@@ -223,7 +224,20 @@ Alternative hypothesis: $p_2 ≠ 0 $ There is sufficient evidence to suggest tha
 We use significance level of 0.05. Since the t-statistics is 23.227 and the p-value is < 2e-16 which is much smaller than our significance level, so we reject the null hypothesis since there's sufficient evidence, and thus there's sufficient evidence to suggest to budget does have an effect on the success of the movies. 
 
 ## LASSO:
+```{r lasso, message = F, warning = F}
+set.seed(919)
+library(glmnet)
 
+```
+
+## Ridge: 
+```{r ridge, message = F, warning = F}
+ 
+```
+## Predicting moves' gross
+```{r prediction-gross, message = F, warning = F}
+ 
+```
 
 ## Missing Data Analysis:
 
