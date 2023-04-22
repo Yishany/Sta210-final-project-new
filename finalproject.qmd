@@ -77,22 +77,40 @@ data %>%
 ```
 
 
-2. Distribution of the `gross` variable: 
+2. Log-transformation and Distribution of the `gross` variable: 
 ```{r distribution-gross}
-data %>% 
-  summarise(mean_gross = mean(gross),
-            median_gross = median(gross),
-            sd_gross = sd(gross),
-            min_gross = min(gross),
-            max_gross = max(gross)) %>% 
-  kable()
+data <- data %>% 
+  mutate(log_gross = log(gross)) %>%
+  mutate(mean = mean(log_gross))
+
+p1 <- ggplot(data = data, aes(x = gross))+
+  geom_histogram(fill = "light blue", color = "black")+
+  labs(title = "Distribution of Movies' Gross",
+       x = "Gross")
+p2 <- ggplot(data = data, aes(x = log_gross))+
+  geom_histogram(fill = "light blue", color = "black")+
+  labs(x = "Log (Gross)")
+p1/p2
+
 ```
 
-XXX do we need to use log transformation here XXX ???????
+Since the response variable is significantly right skewed, we apply a log-transformation to it and will use log(gross) as our new response variable in the future analysis. Now, our response variable is unimodal, roughly a normal distribution, with the mean at 17.2102, and several outliers at left tail. 
 
 
 3. Relationship between Gross and Budget based on different Genres: 
-
+```{r distribution-gross-budget-genres, message = F, warning = F}
+ggplot(data = data, aes(x=budget, y = log_gross, color = rating))+
+  geom_point(size=0.5, fill=NA) +
+  geom_smooth(fill=NA) +
+  theme(legend.key.size = unit(0.3, "cm")) +
+  facet_wrap(~ genre)+
+  ggtitle("Relationship between Budget and Gross by Rating across Genres") +
+  xlab("Budget") +
+  ylab("Log(Gross)")+
+  scale_color_discrete(name = "Rating", guide = guide_legend(override.aes = list(size = 1)))+
+  theme(panel.spacing.x = unit(2, "mm"))
+  
+```
 
 ## EDA: Visualizatioins and Summary Statistics
 Since the dataset contains many interesting variables that we want to explore. We first do some EDA on our datasets to show potential problems that we can explore further into. 
