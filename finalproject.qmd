@@ -159,13 +159,6 @@ ggplot(data = data) +
 
 As a potential movie investor, we're curious about the prediction of movies' gross based on all the variables we're interested in. We're very curious about the factors that affect success(gross) of the movie. Therefore, we want to explore the following subquestions in order for us to gain a better understanding of 1) Prediction of movies' gross value; and 2) the factors that affect the success of the movie.
 
-## Linear Regression of all variables
-```{r regression-variables, message = F, warning = F}
-m1 <- lm(log_gross ~ budget + genre + rating + score + votes + year + runtime, data = data)
-m1_aug <- augment(m1)
-summary(m1)
-```
-
 ## Residual plots/Assumptions
 ```{r residual-plot, message = F, warning = F}
 ggplot(m1_aug, aes(x = .fitted, y = .resid)) + 
@@ -174,38 +167,39 @@ ggplot(m1_aug, aes(x = .fitted, y = .resid)) +
   labs(x = "Fitted (predicted) value", y = "Residual") + 
   theme_bw()
 ```
-We can see that the linear assumption is violated since the data is not symmetrically distributed observations around the horizontal axis. We may assume that the dataset has some independence. For example, the movie with the same director or writer, or the star in the movie may lead to higher budget or gross values. Thus, this lead to our furture questions. 
+We can see that the linear assumption is violated since the data is not symmetrically distributed observations around the horizontal axis. We may assume that the dataset has some independence. For example, the movie with the same director or writer, or the star in the movie may lead to higher budget or gross values, such that this movie-specific relatioinship violates independence.
+
+## Linear Regression of all variables
+Based on the above violations, we want to apply linear mixed model to our datasets to further explore our questions. We want to 
+
+```{r regression-variables, message = F, warning = F}
+m1 <- lm(log_gross ~ budget + genre + rating + score + votes + year + runtime, data = data)
+m1_aug <- augment(m1)
+summary(m1)
+```
+
 
 ## Predicting moves' gross
 ```{r prediction-gross, message = F, warning = F}
  
 ```
 
-## Residual Plots
-```{r prediction-gross2, message = F, warning = F}
- 
-```
-
 ## Hypothesis Test 1:
-Aim 1: Budget does NOT have an effect on the success of the movies.
-Null hypothesis: 
-Alternative hypothesis: 
+Question 1: Is there evidence to suggest that Budget has an effect on the success of the movies?
+Null hypothesis: $p_1 = 0 $ There isn't sufficient evidence to suggest that budget is associated with movies' gross, while controlling for all of the variables.
+Alternative hypothesis: $p_1 ≠ 0 $ There is sufficient evidence to suggest that budget is associated with movies' gross, while controlling for all of the variables.
 
-```{r budget-gross-hypothesis, message = F, warning = F}
- 
-```
+We use significance level of 0.05. Since the t-statistics is 23.227 and the p-value is < 2e-16 which is much smaller than our significance level, so we reject the null hypothesis since there's sufficient evidence, and thus there's sufficient evidence to suggest to budget does have an effect on the success of the movies. 
 
 ## Hypothesis Test 2:
-Aim 2: Genre has an effect on the success of the movies
-Null hypothesis: 
-Alternative hypothesis:
+Aim 2: Is there evidence to suggest that Genre has an effect on the success of the movies?
+Null hypothesis:  $p_2 = 0 $ There isn't sufficient evidence to suggest that Genre is associated with movies' gross, while controlling for all of the variables.
+Alternative hypothesis: $p_2 ≠ 0 $ There is sufficient evidence to suggest that Genre is associated with movies' gross, while controlling for all of the variables.
 
-## Hypothesis Test 3:
-Aim 3: Longer runtime has an effect the success of the movies.
+We use significance level of 0.05. Since the t-statistics is 23.227 and the p-value is < 2e-16 which is much smaller than our significance level, so we reject the null hypothesis since there's sufficient evidence, and thus there's sufficient evidence to suggest to budget does have an effect on the success of the movies. 
 
+## LASSO:
 
-## Other Models:
-Forward-backward model, LASSO, Linear mixed models
 
 ## Missing Data Analysis:
 
