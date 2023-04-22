@@ -14,6 +14,7 @@ library(knitr)
 library(broom)
 library(patchwork)
 library(tidymodels)
+library(corrplot)
 data <- read_csv("data/movies.csv")
 ```
 
@@ -155,9 +156,41 @@ ggplot(data = data) +
 ```
 
 
+```{r interesting-relationships, message = F, warning = F}
+ggplot(data = data, aes(x = runtime, y = gross)) + 
+  geom_point() +
+  labs(title = "Runtime has no relationship with Gross")
+
+data2 <- data %>% 
+  mutate(log_votes = log(votes)) 
+
+ggplot(data = data2, aes(x = log_votes, y = score)) + 
+  geom_point() +
+  labs(title = "Log of votes has a converging, positive relationship with Score")
+```
+
+```{r correlation-matrix, message = F, warning = F}
+
+numeric_data <- data |> 
+  select("score", "votes", "budget", "gross", "runtime")
+corrplot(cor(numeric_data))
+
+```
+
+
 ## Methodology
 
 As a potential movie investor, we're curious about the prediction of movies' gross based on all the variables we're interested in. We're very curious about the factors that affect success(gross) of the movie. Therefore, we want to explore the following subquestions in order for us to gain a better understanding of 1) Prediction of movies' gross value; and 2) the factors that affect the success of the movie.
+
+## Linear Regression of all variables
+Based on the above violations, we want to apply linear mixed model to our datasets to further explore our questions. We want to 
+
+```{r regression-variables, message = F, warning = F}
+m1 <- lm(log_gross ~ budget + genre + rating + score + votes + year + runtime, data = data)
+m1_aug <- augment(m1)
+summary(m1)
+```
+
 
 ## Residual plots/Assumptions
 ```{r residual-plot, message = F, warning = F}
@@ -168,15 +201,6 @@ ggplot(m1_aug, aes(x = .fitted, y = .resid)) +
   theme_bw()
 ```
 We can see that the linear assumption is violated since the data is not symmetrically distributed observations around the horizontal axis. We may assume that the dataset has some independence. For example, the movie with the same director or writer, or the star in the movie may lead to higher budget or gross values, such that this movie-specific relatioinship violates independence.
-
-## Linear Regression of all variables
-Based on the above violations, we want to apply linear mixed model to our datasets to further explore our questions. We want to 
-
-```{r regression-variables, message = F, warning = F}
-m1 <- lm(log_gross ~ budget + genre + rating + score + votes + year + runtime, data = data)
-m1_aug <- augment(m1)
-summary(m1)
-```
 
 
 ## Predicting moves' gross
