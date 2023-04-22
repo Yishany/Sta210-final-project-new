@@ -65,7 +65,7 @@ data <- data %>%
 We will use `budget`, `genre`, `rating`,`score` `votes`, `year`, and `runtime` as predictors. Among them, `budget`, `score` `votes`, `year`, and `runtime` are numerical variables, while `genre`and `rating` is a categorical variable.
 
 ## The Response Variable
-
+1. Summary of the `gross` variable: 
 ```{r vis-gross}
 data %>% 
   summarise(mean_gross = mean(gross),
@@ -76,7 +76,23 @@ data %>%
   kable()
 ```
 
-XXX do we need to use log transformation here XXX 
+
+2. Distribution of the `gross` variable: 
+```{r distribution-gross}
+data %>% 
+  summarise(mean_gross = mean(gross),
+            median_gross = median(gross),
+            sd_gross = sd(gross),
+            min_gross = min(gross),
+            max_gross = max(gross)) %>% 
+  kable()
+```
+
+XXX do we need to use log transformation here XXX ???????
+
+
+3. Relationship between Gross and Budget based on different Genres: 
+
 
 ## EDA: Visualizatioins and Summary Statistics
 Since the dataset contains many interesting variables that we want to explore. We first do some EDA on our datasets to show potential problems that we can explore further into. 
@@ -95,11 +111,11 @@ Null hypothesis:
 Alternative hypothesis:
 
 ## Hypothesis Test 3:
-Aim 3: 
+Aim 3: Runtime doesn't affect 
 
 
 ## Other Models:
-LASSO, Linear mixed models, Ridge,
+Forward-backward model, LASSO, Linear mixed models
 
 ## Missing Data Analysos:
 
