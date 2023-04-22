@@ -93,6 +93,18 @@ p2 <- ggplot(data = data, aes(x = log_gross))+
 p1/p2
 
 ```
+```{r gross-distributions, message = F, warning = F}
+ggplot(data = data) + 
+  geom_boxplot(aes(y = gross, color = genre)) +
+  labs(title = "Gross", 
+       color = "Genre")
+
+ggplot(data = data) + 
+  geom_boxplot(aes(y = log_gross, color = genre)) +
+  labs(title = "Log Gross", 
+       color = "Genre")
+```
+
 
 Since the response variable is significantly right skewed, we apply a log-transformation to it and will use log(gross) as our new response variable in the future analysis. Now, our response variable is unimodal, roughly a normal distribution, with the mean at 17.2102, and several outliers at left tail. 
 
@@ -114,6 +126,35 @@ We observe that the relationship between budget and gross is vastly different ac
 ## EDA: Visualizatioins and Summary Statistics
 Since the dataset contains many interesting variables that we want to explore. We first do some EDA on our datasets to show potential problems that we can explore further into. 
 
+```{r numeric-variable-distributions, message = F, warning = F}
+ggplot(data = data) + 
+  geom_boxplot(aes(y = year, color = genre)) +
+  labs(title = "Year", 
+       color = "Genre")
+
+ggplot(data = data) + 
+  geom_boxplot(aes(y = score, color = genre)) +
+  labs(title = "Score", 
+       color = "Genre")
+
+ggplot(data = data) + 
+  geom_boxplot(aes(y = votes, color = genre)) +
+  labs(title = "Votes", 
+       color = "Genre")
+
+ggplot(data = data) + 
+  geom_boxplot(aes(y = budget, color = genre)) +
+  labs(title = "Budget", 
+       color = "Genre")
+
+ggplot(data = data) + 
+  geom_boxplot(aes(y = runtime, color = genre)) +
+  labs(title = "Runtimes", 
+       color = "Genre")
+
+```
+
+
 ## Methodology
 
 As a potential movie investor, we're curious about the prediction of movies' gross based on all the variables we're interested in. We're very curious about the factors that affect success(gross) of the movie. Therefore, we want to explore the following subquestions in order for us to gain a better understanding of 1) Prediction of movies' gross value; and 2) the factors that affect the success of the movie.
@@ -130,7 +171,7 @@ summary(lm1)
 ```
 
 ## Residual Plots
-```{r prediction-gross, message = F, warning = F}
+```{r prediction-gross2, message = F, warning = F}
  
 ```
 
