@@ -59,7 +59,7 @@ Since the dataset includes movies that are not missing or not published yet (the
 
 ```{r filter-data}
 data <- data %>%
-  filter(!is.na(gross) & !is.na(budget) & !is.na(genre) & !is.na(rating) & !is.na(score) & !is.na(votes) & !is.na(year) & !is.na(runtime))
+  filter(!is.na(gross) & !is.na(budget) & !is.na(genre) & !is.na(rating) & !is.na(score) & !is.na(votes) & !is.na(year) & !is.na(runtime) & !is.na(country))
 ```
 
 ## The Predictor Variables
@@ -186,7 +186,7 @@ As a potential movie investor, we're curious about the prediction of movies' gro
 Based on the above violations, we want to apply linear mixed model to our datasets to further explore our questions. We want to 
 
 ```{r regression-variables, message = F, warning = F}
-m1 <- lm(log_gross ~ budget + genre + rating + score + votes + year + runtime, data = data)
+m1 <- lm(log_gross ~ budget + genre + rating + score + votes + year + runtime + country, data = data)
 m1_aug <- augment(m1)
 summary(m1)
 ```
@@ -227,7 +227,14 @@ We use significance level of 0.05. Since the t-statistics is 23.227 and the p-va
 ```{r lasso, message = F, warning = F}
 set.seed(919)
 library(glmnet)
+y <- data$log_gross
+x <- model.matrix(log_gross ~ budget + genre + rating + score + votes + year + runtime + country, data = data)
 
+m_lasso_cv <- cv.glmnet(x, y, alpha = 1)
+best_lambda <- m_lasso_cv$lambda.min
+best_lambda
+
+m_best <- glmnet(x, y, alpha = 1, lambda = best_lambda)
 ```
 
 ## Ridge: 
