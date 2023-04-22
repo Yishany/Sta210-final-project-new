@@ -161,9 +161,20 @@ As a potential movie investor, we're curious about the prediction of movies' gro
 
 ## Linear Regression of all variables
 ```{r regression-variables, message = F, warning = F}
-lm1 <- lm(log_gross ~ budget + genre + rating + score + votes + year + runtime, data = data)
-summary(lm1)
+m1 <- lm(log_gross ~ budget + genre + rating + score + votes + year + runtime, data = data)
+m1_aug <- augment(m1)
+summary(m1)
 ```
+
+## Residual plots/Assumptions
+```{r residual-plot, message = F, warning = F}
+ggplot(m1_aug, aes(x = .fitted, y = .resid)) + 
+  geom_point() + 
+  geom_hline(yintercept = 0, color = "darkred") + 
+  labs(x = "Fitted (predicted) value", y = "Residual") + 
+  theme_bw()
+```
+We can see that the linear assumption is violated since the data is not symmetrically distributed observations around the horizontal axis. We may assume that the dataset has some independence. For example, the movie with the same director or writer, or the star in the movie may lead to higher budget or gross values. Thus, this lead to our furture questions. 
 
 ## Predicting moves' gross
 ```{r prediction-gross, message = F, warning = F}
