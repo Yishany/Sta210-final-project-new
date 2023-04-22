@@ -81,7 +81,7 @@ data %>%
 ```{r distribution-gross}
 data <- data %>% 
   mutate(log_gross = log(gross)) %>%
-  mutate(mean = mean(log_gross))
+  mutate(mean = mean(log_gross)) 
 
 p1 <- ggplot(data = data, aes(x = gross))+
   geom_histogram(fill = "light blue", color = "black")+
@@ -96,9 +96,8 @@ p1/p2
 
 Since the response variable is significantly right skewed, we apply a log-transformation to it and will use log(gross) as our new response variable in the future analysis. Now, our response variable is unimodal, roughly a normal distribution, with the mean at 17.2102, and several outliers at left tail. 
 
-
 3. Relationship between Gross and Budget based on different Genres: 
-```{r distribution-gross-budget-genres, message = F, warning = F}
+```{r relationship-gross-budget-genres, message = F, warning = F}
 ggplot(data = data, aes(x=budget, y = log_gross, color = rating))+
   geom_point(size=0.5, fill=NA) +
   geom_smooth(fill=NA) +
@@ -109,33 +108,54 @@ ggplot(data = data, aes(x=budget, y = log_gross, color = rating))+
   ylab("Log(Gross)")+
   scale_color_discrete(name = "Rating", guide = guide_legend(override.aes = list(size = 1)))+
   theme(panel.spacing.x = unit(2, "mm"))
-  
 ```
+We observe that the relationship between budget and gross is vastly different across genres: Action, adventure, animation movies have a steep slope and generally high budget spans, with outliers which have exceedingly high budget and relatively high gross values. On the other hand, genres such as horror, mystery and romance have a much flatter slope, which corresponds to the industry knowledge that certain genres are more conducive to low-budget film making than others. Therefore, we're interested in further exploring the relationship between budget, genre, and our response variable.
 
 ## EDA: Visualizatioins and Summary Statistics
 Since the dataset contains many interesting variables that we want to explore. We first do some EDA on our datasets to show potential problems that we can explore further into. 
+
 ## Methodology
 
-We're very curious about "What are the factors that affect success(gross) of the movie." Therefore, we want to explore the following subquestions in order for us to gain a better understanding of the factors that affect the success of the movie.
+As a potential movie investor, we're curious about the prediction of movies' gross based on all the variables we're interested in. We're very curious about the factors that affect success(gross) of the movie. Therefore, we want to explore the following subquestions in order for us to gain a better understanding of 1) Prediction of movies' gross value; and 2) the factors that affect the success of the movie.
+
+## Linear Regression of all variables
+```{r regression-variables, message = F, warning = F}
+lm1 <- lm(log_gross ~ budget + genre + rating + score + votes + year + runtime, data = data)
+summary(lm1)
+```
+
+## Predicting moves' gross
+```{r prediction-gross, message = F, warning = F}
+ 
+```
+
+## Residual Plots
+```{r prediction-gross, message = F, warning = F}
+ 
+```
 
 ## Hypothesis Test 1:
-Aim 1: Budget does not have an effect on movies' gross
+Aim 1: Budget does NOT have an effect on the success of the movies.
 Null hypothesis: 
 Alternative hypothesis: 
 
+```{r budget-gross-hypothesis, message = F, warning = F}
+ 
+```
+
 ## Hypothesis Test 2:
-Aim 2: Genre does not have an effect on movies' gross
+Aim 2: Genre has an effect on the success of the movies
 Null hypothesis: 
 Alternative hypothesis:
 
 ## Hypothesis Test 3:
-Aim 3: Runtime doesn't affect 
+Aim 3: Longer runtime has an effect the success of the movies.
 
 
 ## Other Models:
 Forward-backward model, LASSO, Linear mixed models
 
-## Missing Data Analysos:
+## Missing Data Analysis:
 
 
 ## Results
