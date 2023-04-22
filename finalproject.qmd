@@ -1,0 +1,112 @@
+---
+title: "Final Project"
+author: "Christina Yu, Damian Kim"
+format: pdf
+---
+
+
+## Read in the data
+
+```{r read-data}
+library(tidyverse) 
+library(ggfortify)
+library(knitr)
+library(broom)
+library(patchwork)
+library(tidymodels)
+data <- read_csv("data/movies.csv")
+```
+
+## Introduction and data
+
+Nowadays, movie industries are definitely one of the most popular things for people, especially movie investors to look at.  There are more factors that intervene in this
+kind of thing, like actors, genres, user ratings and more
+
+This dataset was scraped from IMDb (Internet Movie Database). There are 6820 movies in the dataset (220 movies per year, 1986-2016). Each movie has the following attributes:
+
+-- `budget`: the budget of a movie. Some movies don't have this, so it appears as 0
+
+-- `company`: the production company
+
+-- `director`: the director
+
+-- `genre`: main genre of the movie.
+
+-- `gross`: revenue of the movie
+
+-- `name`: name of the movie
+
+-- `rating`: rating of the movie (R, PG, etc.)
+
+-- `released`: release date (YYYY-MM-DD)
+
+-- `runtime`: duration of the movie
+
+--  `score`: IMDb user rating
+
+-- `votes`: number of user votes
+
+-- `star`: main actor/actress
+
+-- `writer`: writer of the movie
+
+-- `year`: year of release
+
+We will explore the factors that make a movie successful through examining the effects of `gross`, `budget`, `genre`, `rating`,`score` `votes`, `year`, and `runtime` for individual movie. 
+
+Since the dataset includes movies that are not missing or not published yet (therefore their gross values are missing), we filtered the dataset to include only observations with gross values not being NULL, as it does not make sense to include the movies that are not actually performed or lost real data in our analysis. We filter all the null values for the rest of predictor variables as well. Now we have 5423 observations in the dataset.
+
+```{r filter-data}
+data <- data %>%
+  filter(!is.na(gross) & !is.na(budget) & !is.na(genre) & !is.na(rating) & !is.na(score) & !is.na(votes) & !is.na(year) & !is.na(runtime))
+```
+
+## The Predictor Variables
+We will use `budget`, `genre`, `rating`,`score` `votes`, `year`, and `runtime` as predictors. Among them, `budget`, `score` `votes`, `year`, and `runtime` are numerical variables, while `genre`and `rating` is a categorical variable.
+
+## The Response Variable
+
+```{r vis-gross}
+data %>% 
+  summarise(mean_gross = mean(gross),
+            median_gross = median(gross),
+            sd_gross = sd(gross),
+            min_gross = min(gross),
+            max_gross = max(gross)) %>% 
+  kable()
+```
+
+XXX do we need to use log transformation here XXX 
+
+## EDA: Visualizatioins and Summary Statistics
+Since the dataset contains many interesting variables that we want to explore. We first do some EDA on our datasets to show potential problems that we can explore further into. 
+## Methodology
+
+We're very curious about "What are the factors that affect success(gross) of the movie." Therefore, we want to explore the following subquestions in order for us to gain a better understanding of the factors that affect the success of the movie.
+
+## Hypothesis Test 1:
+Aim 1: Budget does not have an effect on movies' gross
+Null hypothesis: 
+Alternative hypothesis: 
+
+## Hypothesis Test 2:
+Aim 2: Genre does not have an effect on movies' gross
+Null hypothesis: 
+Alternative hypothesis:
+
+## Hypothesis Test 3:
+Aim 3: 
+
+
+## Other Models:
+LASSO, Linear mixed models, Ridge,
+
+## Missing Data Analysos:
+
+
+## Results
+Explain the reasoning for the type of model you’re fitting, predictor variables considered for the model including any interactions. Additionally, show how you arrived at the final model by describing the model selection process, interactions considered, variable transformations (if needed), assessment of conditions and diagnostics, and any other relevant considerations that were part of the model fitting process.
+
+
+## Discussion 
+Summary + statistical arguments to support my conclusions + future limitations/future ideads
