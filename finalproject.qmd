@@ -109,7 +109,7 @@ ggplot(data = data) +
 
 Since the response variable is significantly right skewed, we apply a log-transformation to it and will use log(gross) as our new response variable in the future analysis. Now, our response variable is unimodal, roughly a normal distribution, with the mean at 17.2102, and several outliers at left tail. 
 
-3. Relationship between Gross and Budget based on different Genres: 
+3. Relationship between Gross and Budget based on different Genres & Ratings: 
 ```{r relationship-gross-budget-genres, message = F, warning = F}
 ggplot(data = data, aes(x=budget, y = log_gross, color = rating))+
   geom_point(size=0.5, fill=NA) +
@@ -180,12 +180,12 @@ As can be seen, we have some correlated variables between our predictor variable
 
 ## Methodology
 
-As a potential movie investor, we're curious about the prediction of movies' gross based on all the variables we're interested in. We're very curious about the factors that affect success(gross) of the movie. Therefore, we want to explore the following subquestions in order for us to gain a better understanding of 1) Prediction of movies' gross value; and 2) the factors that affect the success of the movie.
+As a potential movie investor, we're curious about the prediction of movies' gross based on all the variables we're interested in. We're very curious about the factors that affect success(gross) of the movie. Therefore, we want to explore the following subquestions in order for us to gain a better understanding of 1) Prediction of movies' gross value; and 2) the factors that affect the success of the movie. We choose to apply linear regression, linear mixed models, LASSO, and Ridge for further data analysis.
 
 ## Linear Regression of all variables
-Based on the above violations, we want to apply linear mixed model to our datasets to further explore our questions. We want to 
+Based on the above violations, we want to first apply linear regression model to our datasets to further explore our questions. We've gained the equation of XX.  
 
-```{r regression-variables, message = F, warning = F}
+```{r linear-regression-variables, message = F, warning = F}
 m1 <- lm(log_gross ~ budget + genre + rating + score + votes + year + runtime + country, data = data)
 m1_aug <- augment(m1)
 summary(m1)
@@ -203,25 +203,33 @@ ggplot(m1_aug, aes(x = .fitted, y = .resid)) +
 We can see that the linear assumption is violated since the data is not symmetrically distributed observations around the horizontal axis. We may assume that the dataset has some independence. For example, the movie with the same director or writer, or the star in the movie may lead to higher budget or gross values, such that this movie-specific relatioinship violates independence.
 
 ## Linear Mixed Model & Random Effect
-Based on the above violations, we want to apply linear mixed model to our datasets to further explore our questions. We want to look at the assiociations between our interested variables, and random  effect due to country. 
+Based on the above violations, we want to apply linear mixed model to our datasets to further explore our questions. We want to look at the associations between our interested variables, and randomeffect due to country. 
 
 ```{r random-effect, message = F, warning = F}
- 
+library(lme4)
+m4 <- lm(log_gross ~ budget + genre + rating + score + votes + year + runtime + country, data = data)
+m5 <- lmer(log_gross ~ budget + genre + rating + score + votes + year + runtime + (1 | country), data = data)
+summary(m4)$coef
+summary(m5)$coef
 ```
+While adjusting for the random intercept based on country variable and holding all other variables constant, we noticed that XXXXX. ???????? (not just coefficient explanation?????????)
 
-## Hypothesis Test 1:
+## Interested Hypothesis Test 1:
 Question 1: Is there evidence to suggest that Budget has an effect on the success of the movies?
-Null hypothesis: $p_1 = 0 $ There isn't sufficient evidence to suggest that budget is associated with movies' gross, while controlling for all of the variables.
-Alternative hypothesis: $p_1 ≠ 0 $ There is sufficient evidence to suggest that budget is associated with movies' gross, while controlling for all of the variables.
+Null hypothesis: $p_1 = 0$ There isn't sufficient evidence to suggest that budget is associated with movies' gross, while controlling for all of the variables.
+Alternative hypothesis: $p_1 ≠ 0$ There is sufficient evidence to suggest that budget is associated with movies' gross, while controlling for all of the variables.
 
 We use significance level of 0.05. Since the t-statistics is 23.227 and the p-value is < 2e-16 which is much smaller than our significance level, so we reject the null hypothesis since there's sufficient evidence, and thus there's sufficient evidence to suggest to budget does have an effect on the success of the movies. 
 
-## Hypothesis Test 2:
+## Interested Hypothesis Test 2:
 Aim 2: Is there evidence to suggest that Genre has an effect on the success of the movies?
-Null hypothesis:  $p_2 = 0 $ There isn't sufficient evidence to suggest that Genre is associated with movies' gross, while controlling for all of the variables.
-Alternative hypothesis: $p_2 ≠ 0 $ There is sufficient evidence to suggest that Genre is associated with movies' gross, while controlling for all of the variables.
+Null hypothesis:  $p_2 = 0$ There isn't sufficient evidence to suggest that Genre is associated with movies' gross, while controlling for all of the variables.
+Alternative hypothesis: $p_2 ≠ 0$ There is sufficient evidence to suggest that Genre is associated with movies' gross, while controlling for all of the variables.
 
 We use significance level of 0.05. Since the t-statistics is 23.227 and the p-value is < 2e-16 which is much smaller than our significance level, so we reject the null hypothesis since there's sufficient evidence, and thus there's sufficient evidence to suggest to budget does have an effect on the success of the movies. 
+
+## Summary based on Hypothesis: 
+Based on our previous two hypothesis, we noticed that XXXXX. 
 
 ## LASSO:
 ```{r lasso, message = F, warning = F}
@@ -235,13 +243,21 @@ best_lambda <- m_lasso_cv$lambda.min
 best_lambda
 
 m_best <- glmnet(x, y, alpha = 1, lambda = best_lambda)
+m_best$beta
 ```
+
+Explanation for LASSO: Based on this, XXXX variables are included in our model. 
 
 ## Ridge: 
 ```{r ridge, message = F, warning = F}
  
 ```
+
+Explanation for Ridge: 
+
 ## Predicting moves' gross
+Based on all the models we've done above, we've analyzed the relationship between different variables that we're interested in. In order to make our findings applicable for future use, we'd like to make a prediction on movies' gross based on our current variables. 
+
 ```{r prediction-gross, message = F, warning = F}
  
 ```
@@ -251,7 +267,6 @@ m_best <- glmnet(x, y, alpha = 1, lambda = best_lambda)
 
 ## Results
 Explain the reasoning for the type of model you’re fitting, predictor variables considered for the model including any interactions. Additionally, show how you arrived at the final model by describing the model selection process, interactions considered, variable transformations (if needed), assessment of conditions and diagnostics, and any other relevant considerations that were part of the model fitting process.
-
 
 ## Discussion 
 Summary + statistical arguments to support my conclusions + future limitations/future ideads
