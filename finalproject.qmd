@@ -159,14 +159,17 @@ ggplot(data = data) +
 XXX can keep the interesting observations here. we can say that runtime across all the genress are similar around 100 -- no need to include the plot -- need to focus on relationship between response and predictor 
 
 ```{r interesting-relationships, message = F, warning = F}
-ggplot(data = data, aes(x = runtime, y = gross)) + 
+data2 <- data %>% 
+  mutate(log_votes = log(votes)) 
+
+ggplot(data = data, aes(x = budget, y = gross)) + 
   geom_point() +
   labs(title = "Runtime has no relationship with Gross")
 
 data2 <- data %>% 
   mutate(log_votes = log(votes)) 
 
-ggplot(data = data2, aes(x = log_votes, y = score)) + 
+ggplot(data = data2, aes(x = runtime, y = gross)) + 
   geom_point() +
   labs(title = "Log of votes has a converging, positive relationship with Score")
 ```
@@ -185,14 +188,13 @@ As can be seen, we have some correlated variables between our predictor variable
 As a potential movie investor, we're curious about the prediction of movies' gross based on all the variables we're interested in. We're very curious about the factors that affect success(gross) of the movie. Therefore, we want to explore the following subquestions in order for us to gain a better understanding of 1) Prediction of movies' gross value; and 2) the factors that affect the success of the movie. We choose to apply linear regression, linear mixed models, LASSO, and Ridge for further data analysis.
 
 ## Linear Regression of all variables
-Based on the above violations, we want to first apply linear regression model to our datasets to further explore our questions. We've gained the equation of XX.  
+Since it's obvious that our data has a continuous response, we'll not use logistic or ordinal regression here or multinomial regression. Therefore, we gonna use linear regression for our model. Based on the above violations, we want to first apply linear regression model to our datasets to further explore our questions. We've gained the equation of XX.  
 
 ```{r linear-regression-variables, message = F, warning = F}
-m1 <- lm(log_gross ~ budget + genre + rating + score + votes + year + runtime + country, data = data)
+m1 <- lm(log_gross ~ log(budget) + genre + rating + log(score) + log(votes) + year + log(runtime) + country, data = data)
 m1_aug <- augment(m1)
 summary(m1)
 ```
-
 
 ## Residual plots/Assumptions
 ```{r residual-plot, message = F, warning = F}
@@ -201,34 +203,46 @@ ggplot(m1_aug, aes(x = .fitted, y = .resid)) +
   geom_hline(yintercept = 0, color = "darkred") + 
   labs(x = "Fitted (predicted) value", y = "Residual") + 
   theme_bw()
+
+ggplot(m1_aug, aes(sample = .resid)) +
+  stat_qq() + 
+  stat_qq_line() + 
+  theme_bw() + 
+  labs(x = "Theoretical quantiles", 
+       y = "Sample quantiles")
 ```
-We can see that the linear assumption is violated since the data is not symmetrically distributed observations around the horizontal axis. We may assume that the dataset has some independence. For example, the movie with the same director or writer, or the star in the movie may lead to higher budget or gross values, such that this movie-specific relatioinship violates independence. -- we acknowledge it -- limitations
+We may assume that each movie is independent of each other. We can see that the linear assumption is violated since the data is not symmetrically distributed observations around the horizontal axis. The linearity, constant variance, and  normality is not satisfied from the above graph. In order to address the normality violation, we did log transformation for our response variable to be `log_gross`. In order to address this problem, we use log transformation to our numeric variabls, and in this way, the linearity residual plot is improved, while the constant variance and normality is still violated. 
+
+We acknowledge it --  limitations XXX
 
 ## Linear Mixed Model & Random Effect
-Since we have the country as fixed effect, we want to apply linear mixed model to our datasets to further explore our questions. We want to look at the associations between our interested variables, and random effect due to country. We would select top 2 countries and assign them to 0 and 1.
+Since we have the country, genre, and rating these three categorical variables have too many levels, for example, for United States, we have XXX data records, and for XX country, we only have XX variables, so it would make more sense for use to use these three varaibels as random effects, we want to apply linear mixed model to our datasets to further explore our questions. We want to look at the associations between our interested variables, and random effect due to country, genre, and rating.
 
 ```{r random-effect, message = F, warning = F}
 library(lme4)
 m4 <- lm(log_gross ~ budget + genre + rating + score + votes + year + runtime + country, data = data)
-m5 <- lmer(log_gross ~ 1 + budget + genre + rating + score + votes + year + runtime + (1 | country), data = data)
+m5 <- lmer(log_gross ~ 1 + budget + (1 | genre) + (1 | rating) + score + votes + year + runtime + (1 | country), data = data)
 summary(m4)$coef
 summary(m5)
 ```
-While adjusting for the random intercept based on country variable and holding all other variables constant, we noticed that the estimated variance is 0.1623 which means that all the country-specific intercept is distributed around my model's overall intercept within estimated variance of 0.1623, given that our unit is log dollars, and our estimated variance is quite small, we may expect that the country is similar. In order for us to know whether a movie is successful or not, production of country may not be a big effect on the movie's success.
+While adjusting for the random intercept based on country variable and holding all other variables constant, we noticed that the estimated variance is 0.1623 which means that all the country-specific intercept is distributed around the model's overall intercept within estimated variance of 0.1623, given that our unit is log dollars, and our estimated variance is quite small, we may expect that the country is similar. In terms of our interest in knowing whether a movie is successful or not, production of country may not be a big effect on the movie's success.
+
+Since we noticed that genre has the smallest estimated variance (0.08254), we may say that compared to the difference between ratings and countries, the difference between genres is smaller, while rating has the biggest difference. Given that our unit is log dollars, and all of our estimated variance is quite small, the differences between these variables should be similar to each other. 
 
 ## Interested Hypothesis Test 1:
-Question 1: Is there evidence to suggest that Budget has an effect on the success of the movies?
+Question 1: Is there evidence to suggest that log(Budget) has an effect on the success of the movies?
 Null hypothesis: $p_1 = 0$ There isn't sufficient evidence to suggest that budget is associated with movies' gross, while controlling for all of the variables.
 Alternative hypothesis: $p_1 ≠ 0$ There is sufficient evidence to suggest that budget is associated with movies' gross, while controlling for all of the variables.
 
-We use significance level of 0.05. Since the t-statistics is 23.227 and the p-value is < 2e-16 which is much smaller than our significance level, so we reject the null hypothesis since there's sufficient evidence, and thus there's sufficient evidence to suggest to budget does have an effect on the success of the movies. 
+We use significance level of 0.05. Since the t-statistics is 23.227 and the p-value is < 2e-16 which is much smaller than our significance level, so we reject the null hypothesis since there's sufficient evidence, and thus there's sufficient evidence to suggest to log(budget) does have an effect on the success of the movies (log(gross)).
 
+In terms of qualitatively addressing this issue: in our model, we know that every $1$ million increase in our budget, the gross value is expected to increase by $e^{cc}$ dollars.
 ## Interested Hypothesis Test 2:
-Aim 2: Is there evidence to suggest that Genre has an effect on the success of the movies?
-Null hypothesis:  $p_2 = 0$ There isn't sufficient evidence to suggest that Genre is associated with movies' gross, while controlling for all of the variables.
-Alternative hypothesis: $p_2 ≠ 0$ There is sufficient evidence to suggest that Genre is associated with movies' gross, while controlling for all of the variables.
+Aim 2: Is there evidence to suggest that log(Score) has an effect on the success of the movies?
+Null hypothesis:  $p_2 = 0$ There isn't sufficient evidence to suggest that Score is associated with movies' gross, while controlling for all of the variables.
+Alternative hypothesis: $p_2 ≠ 0$ There is sufficient evidence to suggest that Score is associated with movies' gross, while controlling for all of the variables.
 
-We use significance level of 0.05. Since the t-statistics is 23.227 and the p-value is < 2e-16 which is much smaller than our significance level, so we reject the null hypothesis since there's sufficient evidence, and thus there's sufficient evidence to suggest to genre does have an effect on the success of the movies. 
+We use significance level of 0.05. Since the t-statistics is 23.227 and the p-value is 3.06e-09 which is much smaller than our significance level, so we reject the null hypothesis since there's sufficient evidence, and thus there's sufficient evidence to suggest to genre does have an effect on the success of the movies. 
 
 ## Summary based on Hypothesis: 
 Based on our previous two hypothesis, we noticed that XXXXX. 
@@ -254,8 +268,34 @@ Explanation for LASSO: Based on this, dot means that those doesn't have a signif
 Based on all the models we've done above, we've analyzed the relationship between different variables that we're interested in. In order to make our findings applicable for future use, we'd like to make a prediction on movies' gross based on our current variables. 
 
 ```{r prediction-gross, message = F, warning = F}
+set.seed(123)
+dim(data)
 
+indices <- sample(1:5423, size = 5423 * 0.8, replace = F)
+train.data  <- data %>% 
+  slice(indices)
+test.data <- data %>% 
+  slice(-indices)
+dim(train.data)
+
+library(caret)
+cv_method <- trainControl(method = "cv", number = 10,
+                          repeats = 5)
+m1 <- train(log_gross ~ budget + genre + rating + score + votes + year + runtime + country, data = data, method = "lm", trControl = cv_method)
+m2 <- train(log_gross ~ budget + genre + rating + score + votes + year + runtime + country, data = data, method = "lm", trControl = cv_method)
+
+print(m2)
+
+library(caret)
+cv_method <- trainControl(method = "cv", number = 10,
+                          repeats = 5)
+m3 <- train(log_gross ~ log(budget) + genre + rating + log(score) + log(votes) + year + log(runtime) + country, data = data, method = "lm", trControl = cv_method)
+m4 <- train(log_gross ~ log(budget) + genre + rating + log(score) + log(votes) + year + log(runtime) + country, data = data, method = "lm", trControl = cv_method)
+
+print(m4)
 ```
+
+The RMSE from first model is XXX; while the RMSE from the second model is XXXX. Since the second one is smaller, the second one is better performing model in predicting the gross values of the movie. XXXX Since better, we might use log/ or fewer variables in predicting our gross values. 
 
 ## Missing Data Analysis:
 
