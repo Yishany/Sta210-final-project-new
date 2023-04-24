@@ -107,18 +107,20 @@ ggplot(data = data) +
 ```
 
 
-Since the response variable is significantly right skewed, we apply a log-transformation to it and will use log(gross) as our new response variable in the future analysis. Now, our response variable is unimodal, roughly a normal distribution, with the mean at 17.2102, and several outliers at left tail. 
+Since the response variable is significantly right skewed, we apply a log-transformation to it and will use log(gross) as our new response variable in the future analysis. Now, our response variable is unimodal, roughly a normal distribution, with the mean at 17.2102, and several outliers at left tail
+
+keep the original graph for gross. XX genre has the most movies / some outliers a lot of movie
 
 3. Relationship between Gross and Budget based on different Genres & Ratings: 
 ```{r relationship-gross-budget-genres, message = F, warning = F}
-ggplot(data = data, aes(x=budget, y = log_gross, color = rating))+
+ggplot(data = data, aes(x=budget, y = gross, color = rating))+
   geom_point(size=0.5, fill=NA) +
   geom_smooth(fill=NA) +
   theme(legend.key.size = unit(0.3, "cm")) +
   facet_wrap(~ genre)+
   ggtitle("Relationship between Budget and Gross by Rating across Genres") +
   xlab("Budget") +
-  ylab("Log(Gross)")+
+  ylab("Gross")+
   scale_color_discrete(name = "Rating", guide = guide_legend(override.aes = list(size = 1)))+
   theme(panel.spacing.x = unit(2, "mm"))
 ```
@@ -154,7 +156,7 @@ ggplot(data = data) +
        color = "Genre")
 
 ```
-
+XXX can keep the interesting observations here. we can say that runtime across all the genress are similar around 100 -- no need to include the plot -- need to focus on relationship between response and predictor 
 
 ```{r interesting-relationships, message = F, warning = F}
 ggplot(data = data, aes(x = runtime, y = gross)) + 
@@ -200,19 +202,19 @@ ggplot(m1_aug, aes(x = .fitted, y = .resid)) +
   labs(x = "Fitted (predicted) value", y = "Residual") + 
   theme_bw()
 ```
-We can see that the linear assumption is violated since the data is not symmetrically distributed observations around the horizontal axis. We may assume that the dataset has some independence. For example, the movie with the same director or writer, or the star in the movie may lead to higher budget or gross values, such that this movie-specific relatioinship violates independence.
+We can see that the linear assumption is violated since the data is not symmetrically distributed observations around the horizontal axis. We may assume that the dataset has some independence. For example, the movie with the same director or writer, or the star in the movie may lead to higher budget or gross values, such that this movie-specific relatioinship violates independence. -- we acknowledge it -- limitations
 
 ## Linear Mixed Model & Random Effect
-Based on the above violations, we want to apply linear mixed model to our datasets to further explore our questions. We want to look at the associations between our interested variables, and randomeffect due to country. 
+Since we have the country as fixed effect, we want to apply linear mixed model to our datasets to further explore our questions. We want to look at the associations between our interested variables, and random effect due to country. We would select top 2 countries and assign them to 0 and 1.
 
 ```{r random-effect, message = F, warning = F}
 library(lme4)
 m4 <- lm(log_gross ~ budget + genre + rating + score + votes + year + runtime + country, data = data)
-m5 <- lmer(log_gross ~ budget + genre + rating + score + votes + year + runtime + (1 | country), data = data)
+m5 <- lmer(log_gross ~ 1 + budget + genre + rating + score + votes + year + runtime + (1 | country), data = data)
 summary(m4)$coef
-summary(m5)$coef
+summary(m5)
 ```
-While adjusting for the random intercept based on country variable and holding all other variables constant, we noticed that XXXXX. ???????? (not just coefficient explanation?????????)
+While adjusting for the random intercept based on country variable and holding all other variables constant, we noticed that the estimated variance is 0.1623 which means that all the country-specific intercept is distributed around my model's overall intercept within estimated variance of 0.1623, given that our unit is log dollars, and our estimated variance is quite small, we may expect that the country is similar. In order for us to know whether a movie is successful or not, production of country may not be a big effect on the movie's success.
 
 ## Interested Hypothesis Test 1:
 Question 1: Is there evidence to suggest that Budget has an effect on the success of the movies?
@@ -226,7 +228,7 @@ Aim 2: Is there evidence to suggest that Genre has an effect on the success of t
 Null hypothesis:  $p_2 = 0$ There isn't sufficient evidence to suggest that Genre is associated with movies' gross, while controlling for all of the variables.
 Alternative hypothesis: $p_2 ≠ 0$ There is sufficient evidence to suggest that Genre is associated with movies' gross, while controlling for all of the variables.
 
-We use significance level of 0.05. Since the t-statistics is 23.227 and the p-value is < 2e-16 which is much smaller than our significance level, so we reject the null hypothesis since there's sufficient evidence, and thus there's sufficient evidence to suggest to budget does have an effect on the success of the movies. 
+We use significance level of 0.05. Since the t-statistics is 23.227 and the p-value is < 2e-16 which is much smaller than our significance level, so we reject the null hypothesis since there's sufficient evidence, and thus there's sufficient evidence to suggest to genre does have an effect on the success of the movies. 
 
 ## Summary based on Hypothesis: 
 Based on our previous two hypothesis, we noticed that XXXXX. 
@@ -246,20 +248,13 @@ m_best <- glmnet(x, y, alpha = 1, lambda = best_lambda)
 m_best$beta
 ```
 
-Explanation for LASSO: Based on this, XXXX variables are included in our model. 
-
-## Ridge: 
-```{r ridge, message = F, warning = F}
- 
-```
-
-Explanation for Ridge: 
+Explanation for LASSO: Based on this, dot means that those doesn't have a significant effect XXX. Put LASSO above -- this is variable selection -- we basically could say that because XXX these variables have coefficient -- we keep these variables as our predictors. 
 
 ## Predicting moves' gross
 Based on all the models we've done above, we've analyzed the relationship between different variables that we're interested in. In order to make our findings applicable for future use, we'd like to make a prediction on movies' gross based on our current variables. 
 
 ```{r prediction-gross, message = F, warning = F}
- 
+
 ```
 
 ## Missing Data Analysis:
