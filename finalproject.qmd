@@ -185,7 +185,25 @@ As can be seen, we have some correlated variables between our predictor variable
 
 ## Methodology
 
-As a potential movie investor, we're curious about the prediction of movies' gross based on all the variables we're interested in. We're very curious about the factors that affect success(gross) of the movie. Therefore, we want to explore the following subquestions in order for us to gain a better understanding of 1) Prediction of movies' gross value; and 2) the factors that affect the success of the movie. We choose to apply linear regression, linear mixed models, LASSO, and Ridge for further data analysis.
+As a potential movie investor, we're curious about the prediction of movies' gross based on all the variables we're interested in. We're very curious about the factors that affect success(gross) of the movie. Therefore, we want to explore the following subquestions in order for us to gain a better understanding of 1) Prediction of movies' gross value; and 2) the factors that affect the success of the movie. We choose to apply linear regression, Residual Plots, linear mixed models, LASSO, Repeated k-fold validation, and Missing Data analysis for further data analysis.
+
+## LASSO (Variable Selection):
+Since we're quite interested in the above variables as we just mentioned, but it's lack of technical proof to show that our selected variables indeed can lead to further data exploration. Therefore, we apply LASSO here as the variable selection process to see whether we con continue with our selected variables. 
+```{r lasso, message = F, warning = F}
+set.seed(919)
+library(glmnet)
+y <- data$log_gross
+x <- model.matrix(log_gross ~ budget + genre + rating + score + votes + year + runtime + country, data = data)
+
+m_lasso_cv <- cv.glmnet(x, y, alpha = 1)
+best_lambda <- m_lasso_cv$lambda.min
+best_lambda
+
+m_best <- glmnet(x, y, alpha = 1, lambda = best_lambda)
+m_best$beta
+```
+
+Explanation for LASSO: Based on this, dot means that those doesn't have a significant effect XXX. Put LASSO above -- this is variable selection -- we basically could say that because XXX these variables have coefficient -- we keep these variables as our predictors. 
 
 ## Linear Regression of all variables
 Since it's obvious that our data has a continuous response, we'll not use logistic or ordinal regression here or multinomial regression. Therefore, we gonna use linear regression for our model. Based on the above violations, we want to first apply linear regression model to our datasets to further explore our questions. We've gained the equation of XX.  
@@ -247,22 +265,6 @@ We use significance level of 0.05. Since the t-statistics is 23.227 and the p-va
 ## Summary based on Hypothesis: 
 Based on our previous two hypothesis, we noticed that XXXXX. 
 
-## LASSO:
-```{r lasso, message = F, warning = F}
-set.seed(919)
-library(glmnet)
-y <- data$log_gross
-x <- model.matrix(log_gross ~ budget + genre + rating + score + votes + year + runtime + country, data = data)
-
-m_lasso_cv <- cv.glmnet(x, y, alpha = 1)
-best_lambda <- m_lasso_cv$lambda.min
-best_lambda
-
-m_best <- glmnet(x, y, alpha = 1, lambda = best_lambda)
-m_best$beta
-```
-
-Explanation for LASSO: Based on this, dot means that those doesn't have a significant effect XXX. Put LASSO above -- this is variable selection -- we basically could say that because XXX these variables have coefficient -- we keep these variables as our predictors. 
 
 ## Predicting moves' gross
 Based on all the models we've done above, we've analyzed the relationship between different variables that we're interested in. In order to make our findings applicable for future use, we'd like to make a prediction on movies' gross based on our current variables. 
@@ -299,9 +301,10 @@ The RMSE from first model is XXX; while the RMSE from the second model is XXXX. 
 
 ## Missing Data Analysis:
 
+XXXX
 
 ## Results
 Explain the reasoning for the type of model you’re fitting, predictor variables considered for the model including any interactions. Additionally, show how you arrived at the final model by describing the model selection process, interactions considered, variable transformations (if needed), assessment of conditions and diagnostics, and any other relevant considerations that were part of the model fitting process.
 
-## Discussion 
+## Discussion & Limitations 
 Summary + statistical arguments to support my conclusions + future limitations/future ideads
