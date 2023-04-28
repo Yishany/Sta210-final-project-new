@@ -15,6 +15,11 @@ library(broom)
 library(patchwork)
 library(tidymodels)
 library(corrplot)
+library(nnet)
+library(car)
+library(mice)
+library(naniar)
+library(UpSetR)
 data <- read_csv("data/movies.csv")
 ```
 
@@ -55,7 +60,15 @@ This dataset was scraped from IMDb (Internet Movie Database). There are 6820 mov
 
 We will explore the factors that make a movie successful through examining the effects of `gross`, `budget`, `genre`, `rating`,`score` `votes`, `year`, and `runtime` for individual movie. 
 
-Since the dataset includes movies that are not missing or not published yet (therefore their gross values are missing), we filtered the dataset to include only observations with gross values not being NULL, as it does not make sense to include the movies that are not actually performed or lost real data in our analysis. We filter all the null values for the rest of predictor variables as well, since we decided that since we were working with such a large number of movies, that it was reasonable to get rid of movies that were missing some variable, for convenience of model-fitting. Now we have 5423 observations in the dataset.
+First we will explore missingness in our dataset.
+```{r missingness, message = F, warning = F}
+vis_miss(data)
+gg_miss_upset(data)
+gg_miss_fct(x = data, fct = genre)
+```
+
+
+The dataset includes movies that are not missing or not published yet (therefore their gross values are missing), we filtered the dataset to include only observations with gross values not being NULL, as it does not make sense to include the movies that are not actually performed or lost real data in our analysis. We filtered all the null values for the rest of predictor variables as well. About 28% of the observations were missing budget, whereas the next most missing variable was gross, with 2%. From elementary missingness analysis there did not seem to be numerically significant relationships between the missingness of variables and budget. We decided to do a complete case analysis, because even though MCAR missingness is unlikely in real world data, since we were working with such a large number of movies, that it was reasonable to get rid of movies that were missing some variable, for convenience of model-fitting (and because we would not have too much biasing, since in general missingness was less than 2% asides from budget). Now we have 5423 observations in the dataset.
 
 ```{r filter-data}
 data <- data %>%
@@ -125,6 +138,7 @@ ggplot(data = data, aes(x=budget, y = gross, color = rating))+
   theme(panel.spacing.x = unit(2, "mm"))
 ```
 We observe that the relationship between budget and gross is vastly different across genres: Action, adventure, animation movies have a steep slope and generally high budget spans, with outliers which have exceedingly high budget and relatively high gross values. On the other hand, genres such as horror, mystery and romance have a much flatter slope, which corresponds to the industry knowledge that certain genres are more conducive to low-budget film making than others. Therefore, we're interested in further exploring the relationship between budget, genre, and our response variable.
+
 
 ## EDA: Visualizatioins and Summary Statistics
 Since the dataset contains many interesting variables that we want to explore. We first do some EDA on our datasets to show potential problems that we can explore further into. 
