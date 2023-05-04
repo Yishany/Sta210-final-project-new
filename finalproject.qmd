@@ -29,34 +29,7 @@ data <- read_csv("data/movies.csv")
 With the rise in the age of information, the processing speeds of data are accelerated to impossible levels. One of the densest forms of media content out there is the transcription of words into pixels. A book that previously took 2 weeks to finish now fits in the span of 2 hours in the insanely digestible form of: movies. The movie industry is worth 95 billion dollars in the US alone, and indeed there is a great demand for quality movies. Though it is not easily apparent to tell what makes a movie great, there are some basic data that might help determine some of the factors of a great movie. We decided to try and tackle this heavy yet essential question. What factors might help make a movie successful? Throughout this project we can consider this question through the lens of a potential movie investor.
 
 This dataset was scraped from IMDb (Internet Movie Database). There are 6820 movies in the dataset (220 movies per year, 1986-2016). Each movie has the following attributes:
-
--- `budget`: the budget of a movie. Some movies don't have this, so it appears as 0
-
--- `company`: the production company
-
--- `director`: the director
-
--- `genre`: main genre of the movie.
-
--- `gross`: revenue of the movie
-
--- `name`: name of the movie
-
--- `rating`: rating of the movie (R, PG, etc.)
-
--- `released`: release date (YYYY-MM-DD)
-
--- `runtime`: duration of the movie
-
---  `score`: IMDb user rating
-
--- `votes`: number of user votes
-
--- `star`: main actor/actress
-
--- `writer`: writer of the movie
-
--- `year`: year of release
+`budget`: the budget of a movie. Some movies don't have this, so it appears as 0.  `company`: the production company.  `director`: the director.  `genre`: main genre of the movie.  `gross`: revenue of the movie.  `name`: name of the movie.  `rating`: rating of the movie (R, PG, etc.).  `released`: release date (YYYY-MM-DD).  `runtime`: duration of the movie.  `score`: IMDb user rating.  `votes`: number of user votes.  `star`: main actor/actress.  `writer`: writer of the movie.  `year`: year of release.
 
 We will explore the factors that make a movie successful through examining the effects of our variaables of interest: `gross`, `budget`, `genre`, `rating`,`score` `votes`, and `runtime` for individual movie. 
 
