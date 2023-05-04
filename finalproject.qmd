@@ -3,10 +3,6 @@ title: "Final Project"
 author: "Christina Yu, Damian Kim"
 format: pdf
 ---
-
-
-## Read in the data
-
 ```{r read-data, message = F, warning = F, echo = F}
 library(tidyverse) 
 library(ggfortify)
@@ -25,7 +21,6 @@ data <- read_csv("data/movies.csv")
 
 ## Introduction and data
 
-
 With the rise in the age of information, the processing speeds of data are accelerated to impossible levels. One of the densest forms of media content out there is the transcription of words into pixels. A book that previously took 2 weeks to finish now fits in the span of 2 hours in the insanely digestible form of: movies. The movie industry is worth 95 billion dollars in the US alone, and indeed there is a great demand for quality movies. Though it is not easily apparent to tell what makes a movie great, there are some basic data that might help determine some of the factors of a great movie. We decided to try and tackle this heavy yet essential question. What factors might help make a movie successful? Throughout this project we can consider this question through the lens of a potential movie investor.
 
 This dataset was scraped from IMDb (Internet Movie Database). There are 6820 movies in the dataset (220 movies per year, 1986-2016). Each movie has the following attributes:
@@ -38,7 +33,6 @@ First we will explore missingness in our dataset.
 gg_miss_fct(x = data, fct = genre)
 ```
 
-
 The dataset includes movies that haven't been published yet (which causes a missing gross value). In our project we are considering gross revenue of a movie as the defining indicator of success. Considering that, we removed all observations that haven't been published yet or are missing gross values, because we are interested only in movies with a quantitative measure of success. 
 
 In fact, we also decided to rid our dataset of missing values for the other predictor variables as well. About 28% of the observations were missing a value for budget, whereas the next most missing variable was gross, with 2%. From elementary missingness analysis there did not seem to be very strong, numerically significant relationships between the missingness of each variable with other variables of interest. We decided to do a complete case analysis.
@@ -48,11 +42,11 @@ data <- data %>%
   filter(!is.na(gross) & !is.na(budget) & !is.na(genre) & !is.na(rating) & !is.na(score) & !is.na(votes) & !is.na(runtime) & !is.na(country))
 ```
 
-## The Predictor Variables
+## The Predictor Variables & The Response Variable
 We will use the `budget`, `genre`, `rating`,`score` `votes`, `runtime`, and `country` variables as predictors. Among them, `budget`, `score` `votes`, and `runtime` are numerical variables, while `genre`, `rating`, and `country` are categorical variables.
 
-## The Response Variable
-As described earlier, the `gross` numerical variable is our response variable.
+As described earlier, the `gross` numerical variable is our response variable. 
+
 1. Summary of the `gross` variable: 
 ```{r vis-gross, warning = F, message = F, echo = F}
 data %>% 
@@ -63,7 +57,6 @@ data %>%
             max_gross = max(gross)) %>% 
   kable()
 ```
-
 
 2. Log-transformation and Distribution of the `gross` variable: 
 ```{r distribution-gross, warning = F, message = F, echo = F}
@@ -225,6 +218,7 @@ Alternative hypothesis: $p_1 ≠ 0$ There is sufficient evidence to suggest that
 We use significance level of 0.05. Since the t-statistics is 23.227 and the p-value is < 2e-16 which is much smaller than our significance level, so we reject the null hypothesis since there's sufficient evidence, and thus there's sufficient evidence to suggest to log(budget) does have an effect on the success of the movies (log(gross)).
 
 In terms of qualitatively addressing this issue: in our model, we know that every $1$ million increase in our budget, the gross value is expected to increase by $e^{cc}$ dollars.
+
 ## Interested Hypothesis Test 2:
 Aim 2: Is there evidence to suggest that log(Score) has an effect on the success of the movies?
 Null hypothesis:  $p_2 = 0$ There isn't sufficient evidence to suggest that Score is associated with movies' gross, while controlling for all of the variables.
