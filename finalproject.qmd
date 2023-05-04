@@ -250,19 +250,27 @@ Since we have the country, genre, and rating these three categorical variables h
 
 ```{r random-effect, message = F, warning = F}
 library(lme4)
-m4 <- lm(log_gross ~ log(budget) + genre + rating + score + log(votes) + log(runtime) + country, data = data)
-m5 <- lmer(log_gross ~ 1 + log(budget) + (1 | genre) + (1 | rating) + score + log(votes) + log(runtime) + (1 | country), data = data)
+m4 <- lm(log_gross ~ budget + genre + rating + score + votes + runtime + country, data = data)
+m5 <- lmer(log_gross ~ 1 + budget + (1 | genre) + (1 | rating) + score + votes + runtime + (1 | country), data = data)
 summary(m4)$coef
 summary(m5)
 
-r.rmse <- sqrt(mean(residuals(m5)^2))
-r.rmse
+r.rmse4 <- sqrt(mean(residuals(m4)^2))
+r.rmse5 <- sqrt(mean(residuals(m5)^2))
 
 
 m4_aug <- augment(m4)
 rmse(m4_aug, truth = `log_gross`, estimate = .fitted)
 
 ```
+```{r model-compare, message = F, warning = F}
+library(lme4)
+r.rmse4 <- sqrt(mean(residuals(m4)^2))
+r.rmse5 <- sqrt(mean(residuals(m5)^2))
+r.rmse4
+r.rmse5
+```
+Compare model: since we can see that for linear regression, it has smaller RMSE as 1.3523 < 1.3575. We would conclude that model 1 is better than better 2 (linear regression better than the linear mixed model). However, the difference between RMSE is subtle. 
 
 While adjusting for the random intercept based on country variable and holding all other variables constant, we noticed that the estimated variance is 0.1623 which means that all the country-specific intercept is distributed around the model's overall intercept within estimated variance of 0.1623, given that our unit is log dollars, and our estimated variance is quite small, we may expect that the country is similar. In terms of our interest in knowing whether a movie is successful or not, production of country may not be a big effect on the movie's success.
 
