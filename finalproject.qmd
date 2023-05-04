@@ -211,7 +211,7 @@ best_lambda
 m_best <- glmnet(x, y, alpha = 1, lambda = best_lambda)
 m_best$beta
 ```
-Some coefficients of the categories of the variables of genre, rating, and country have coefficients were shrunk to zero. Our data is processed in a way where an observation can take only one "level" of a category, for example, a movie can only have one genre. Since even one of the factors of the genre, rating, or country variables has been excluded, we will remove those factor variables as a whole. This is because LASSO performs feature selection, and for a factor variable such as genre, which is set with a baseline of "action", a singular comparison of, say, adventure vs action is not a feature, rather, the comparison of the entire variable versus action is a feature. Similar logic applies to rating, with a baseline of "approved", and country, with a baseline of "Argentina". Our model therefore contains, after LASSO selection, the variables of budget, score, votes, and runtime. 
+Some coefficients of the categories of the variables of genre, rating, and country have coefficients were shrunk to zero. Our data is processed in a way where an observation can take only one "level" of a category, for example, a movie can only have one genre. Since even one of the factors of the genre, rating, or country variables has been excluded, we will remove those factor variables as a whole. This is because LASSO performs feature selection, and for a factor variable such as genre, which is set with a baseline of "action", a singular comparison of, say, adventure vs action is not a feature, rather, the comparison of the entire variable versus action is a feature. This is somewhat of an all or nothing approach, that we could potentially avoid with dummy coding, contrast coding, or Helmert coding, however in the context of this class we thought it was okay to go with our approach. Similar logic applies to rating, with a baseline of "approved", and country, with a baseline of "Argentina". Our model therefore contains, after LASSO selection, the variables of budget, score, votes, and runtime. 
 
 ## Linear Regression of all variables
 Gross revenue is a continuous response variable, so we will first examine a linear regression model for our data. We've gained the equation of XX.  
@@ -340,7 +340,7 @@ Explain the reasoning for the type of model you’re fitting, predictor variable
 ## Discussion & Limitations 
 Summary + statistical arguments to support my conclusions + future limitations/future ideads
 
-Variable selection,
+Variable selection, specifically the lasso for categorical variables with 2+ levels,
 Rescaling predictor variables,
 linearity assumptions,
 
@@ -350,4 +350,6 @@ linearity assumptions,
 ## Sources
 https://towardsdatascience.com/feature-selection-in-machine-learning-using-lasso-regression-7809c7c2771a
 https://stackoverflow.com/questions/13646654/root-mean-square-error-in-r-mixed-effect-model
+https://psyarxiv.com/wc45u/
+
 
