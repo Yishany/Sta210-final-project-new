@@ -135,7 +135,7 @@ As can be seen, we have some correlated variables between our predictor variable
 As a potential movie investor, we're obviously curious about the prediction of movies' success, and the factors that lead to success. Therefore, we want to explore the following topics in detail in order for us to be better investors: 1) Prediction of movies' gross value 2) the factors that affect the success of the movie. Some of the methods by which we are going to tackle this is through linear regression, residual plots, linear mixed models, and repeated k-fold validation.
 
 # Linear Regression of all variables
-Gross revenue is a continuous response variable, so we will first examine a linear regression model for our data. We've gained the equation of XX.  
+Gross revenue is a continuous response variable, so we will first examine a linear regression model for our data.  Since there are two many country variables and so does rating, we'll omit writing all the coefficient for all these variables in our liear regression result. 
 
 ```{r linear-reg-variables, message = F, warning = F, echo = F, results = F}
 m1 <- lm(log_gross ~ log(budget) + score + log(votes) + log(runtime) + genre + 
@@ -144,6 +144,13 @@ m1_aug <- augment(m1)
 summary(m1)
 
 rmse(m1_aug, truth = `log_gross`, estimate = .fitted)
+```
+We've gained the equation of $log\_gross = 1.65 + 0.48 * log\_budget -0.14 * score + 0.74 * votes +0.62 * runtime -0.86 * country\_Aruba -0.69 * country\_Asutria .... -1.31* ratingG -2.69*ratingNC-17 ... + 0.36 * genre\_Horror -0.2 * genre\_Mystery$. 
+
+```{r linear-reg-variables, message = F, warning = F, echo = F}
+m1 <- lm(log_gross ~ log(budget) + score + log(votes) + log(runtime) + genre + 
+           rating + country, data = data)
+summary(m1)
 ```
 
 # Residual plots/Assumptions
@@ -261,6 +268,25 @@ We use significance level of 0.05. Since the t-statistics is 23.227 and the p-va
 
 ## Summary based on Hypothesis: 
 Based on our previous two hypothesis, we noticed that XXXXX. 
+
+We're curious about the sensitivity 
+```{r matrix, message = F, warning = F, echo = F, results = F}
+library(dplyr)
+library(MASS)
+data <- data %>%
+  mutate(Successful = if_else(log_gross >= 17, 1, 0))
+m9 <- lm(Successful ~ budget + genre + rating + score + runtime, data = data)
+m9 <- augment(m9)
+
+m9 <- m9 %>% 
+  mutate(prob = exp(.fitted)/(1 + exp(.fitted)),
+         pred_leg = ifelse(prob > 0.5, "Successful", "Successful NOT")) %>%
+  dplyr::select(.fitted, prob, pred_leg, Successful)
+
+table(m9$pred_leg, m9$Successful)
+```
+The sensitivity is 2974/(2974+ )= ; the specificity is 49/(2400+49) =; positive predicted value is 2974/(2400+2974) = ; and the negative predicted value is 49/(49+0) = 1.
+Gross revenue is a continuous response variable, so we will first examine a linear regression model for our data. 
 
 ## Results
 Explain the reasoning for the type of model you’re fitting, predictor variables considered for the model including any interactions. Additionally, show how you arrived at the final model by describing the model selection process, interactions considered, variable transformations (if needed), assessment of conditions and diagnostics, and any other relevant considerations that were part of the model fitting process.
