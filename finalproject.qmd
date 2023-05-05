@@ -193,41 +193,8 @@ r.rmse5
 ```
 Our linear model has a smaller RMSE than our mixed effects model: 1.3523 < 1.3575. The difference is very minor, however, we conclude that our linear model is a better fit for our data and has better performance. 
 
-Thus our best model is the linear regression based model:
-$\widehat{Gross} = \beta_0	+ \beta_1 * log(budget) + \beta_2 * score + \beta_3 * log(votes) + \beta_4 * log(runtime)$
-
-# interaction terms
-Since we conclude that the linear regression is better, we continue to apply linear regression and we're curious about whether the relationship between gross and budget depends on score/votes, while adjusting for all other variables. 
-
-```{r interact-score, message = F, warning = F, echo = F, results = F}
-lm(formula = log_gross ~ budget + genre + rating + score + votes + runtime + country + budget * score, data = data)
-lm(formula = log_gross ~ budget + genre + rating + score + votes + runtime + country + budget * votes, data = data)
-```
-
-For interaction terms: 
-The coefficient for score is 3.320e-01 and the coefficient for votes is 5.073e-06. Since the coefficient for votes is too low, we would only consider score here. 
-
-## Interested Hypothesis Test 1:
-Question 1: Is there evidence to suggest that log(Budget) has an effect on the success of the movies?
-Null hypothesis: $p_1 = 0$ There isn't sufficient evidence to suggest that budget is associated with movies' gross, while controlling for all of the variables.
-Alternative hypothesis: $p_1 ≠ 0$ There is sufficient evidence to suggest that budget is associated with movies' gross, while controlling for all of the variables.
-
-We use significance level of 0.05. Since the t-statistics is 23.227 and the p-value is < 2e-16 which is much smaller than our significance level, so we reject the null hypothesis since there's sufficient evidence, and thus there's sufficient evidence to suggest to log(budget) does have an effect on the success of the movies (log(gross)).
-
-In terms of qualitatively addressing this issue: in our model, we know that every $1$ million increase in our budget, the gross value is expected to increase by $e^{cc}$ dollars.
-
-## Interested Hypothesis Test 2:
-Aim 2: Is there evidence to suggest that log(Score) has an effect on the success of the movies?
-Null hypothesis:  $p_2 = 0$ There isn't sufficient evidence to suggest that Score is associated with movies' gross, while controlling for all of the variables.
-Alternative hypothesis: $p_2 ≠ 0$ There is sufficient evidence to suggest that Score is associated with movies' gross, while controlling for all of the variables.
-
-We use significance level of 0.05. Since the t-statistics is 23.227 and the p-value is 3.06e-09 which is much smaller than our significance level, so we reject the null hypothesis since there's sufficient evidence, and thus there's sufficient evidence to suggest to genre does have an effect on the success of the movies. 
-
-## Summary based on Hypothesis: 
-Based on our previous two hypothesis, we noticed that XXXXX. 
-
 ## Predicting moves' gross
-Based on all the models we've done above, we've analyzed the relationship between different variables that we're interested in. In order to make our findings applicable for future use, we'd like to make a prediction on movies' gross based on our current variables. 
+In order to make our findings applicable for future use, we'd like to make a prediction on movies' gross based on our current variables. However, we also want to test to see if scaling our predictor variables happens to create a more predictive model than without scaling. We thought that even though a linear model with log transformed predictors (for the ones that are skewed) would fit our data better, it might not necessarily be a better predictive model. 
 
 ```{r prediction-gross, message = F, warning = F, echo = F, results = F}
 set.seed(123)
@@ -253,17 +220,47 @@ print(m2)
 library(caret)
 cv_method <- trainControl(method = "cv", number = 10,
                           repeats = 5)
-m3 <- train(log_gross ~ log(budget) + genre + rating + log(score) + log(votes) +
+m3 <- train(log_gross ~ log(budget) + genre + rating + score + log(votes) +
               log(runtime) + country, 
             data = data, method = "lm", trControl = cv_method)
-m4 <- train(log_gross ~ log(budget) + genre + rating + log(score) + log(votes) +
+m4 <- train(log_gross ~ log(budget) + genre + rating + score + log(votes) +
               log(runtime) + country, 
             data = data, method = "lm", trControl = cv_method)
 
 print(m4)
 ```
 
-After testing a linear model with and without log-transformed predictor variables, with 10-fold validation with five repeats, the average RMSE without log transformed predictor variables was 1.3736, whereas the average RMSE with transformed predictor variables waas 1.0831. The second one has better predictive power, and thus we determine that our final, best model is our linear model with log-transformed predictor variables. 
+After testing a linear model with and without log-transformed predictor variables, with 10-fold validation with five repeats, the average RMSE with log transformed predictor variables was 1.0831, whereas the average RMSE without transformed predictor variables was 1.3736. The transformed predictor variables model has better predictive power, and thus we determine that our final, best model is our linear model with log-transformed predictor variables. 
+
+```{r predict-avatar, message = F, warning = F, echo = F}
+final_model <- lm(log_gross ~ log(budget) + genre + rating + log(score) + votes + log(runtime) + country, data = data)
+avatar <- data.frame(rating = "PG-13", genre = "Action", score = 7.7, 
+                     votes = 371000, country = "United States", 
+                     budget = 250000000, runtime = 192)
+
+avatar$prediction <- predict(final_model, avatar, type = "response")
+avatar$prediction
+```
+We decided to try and predict the results of Avatar 2, a very popular movie. Our model predicts Avatar: Way of Water to have a gross of 764700000. This is quite off from the real gross of 2300000000. However, Avatar is an atypical movie because it holds the 1st and 3rd highest gross of all movies ever. 
+
+## Interested Hypothesis Test 1:
+Question 1: Is there evidence to suggest that log(Budget) has an effect on the success of the movies?
+Null hypothesis: $p_1 = 0$ There isn't sufficient evidence to suggest that budget is associated with movies' gross, while controlling for all of the variables.
+Alternative hypothesis: $p_1 ≠ 0$ There is sufficient evidence to suggest that budget is associated with movies' gross, while controlling for all of the variables.
+
+We use significance level of 0.05. Since the t-statistics is 23.227 and the p-value is < 2e-16 which is much smaller than our significance level, so we reject the null hypothesis since there's sufficient evidence, and thus there's sufficient evidence to suggest to log(budget) does have an effect on the success of the movies (log(gross)).
+
+In terms of qualitatively addressing this issue: in our model, we know that every $1$ million increase in our budget, the gross value is expected to increase by $e^{cc}$ dollars.
+
+## Interested Hypothesis Test 2:
+Aim 2: Is there evidence to suggest that log(Score) has an effect on the success of the movies?
+Null hypothesis:  $p_2 = 0$ There isn't sufficient evidence to suggest that Score is associated with movies' gross, while controlling for all of the variables.
+Alternative hypothesis: $p_2 ≠ 0$ There is sufficient evidence to suggest that Score is associated with movies' gross, while controlling for all of the variables.
+
+We use significance level of 0.05. Since the t-statistics is 23.227 and the p-value is 3.06e-09 which is much smaller than our significance level, so we reject the null hypothesis since there's sufficient evidence, and thus there's sufficient evidence to suggest to genre does have an effect on the success of the movies. 
+
+## Summary based on Hypothesis: 
+Based on our previous two hypothesis, we noticed that XXXXX. 
 
 ## Results
 Explain the reasoning for the type of model you’re fitting, predictor variables considered for the model including any interactions. Additionally, show how you arrived at the final model by describing the model selection process, interactions considered, variable transformations (if needed), assessment of conditions and diagnostics, and any other relevant considerations that were part of the model fitting process.
