@@ -24,14 +24,9 @@ data <- read_csv("data/movies.csv")
 With the rise in the age of information, the processing speeds of data are accelerated to impossible levels. One of the densest forms of media content out there is the transcription of words into pixels. A book that previously took 2 weeks to finish now fits in the span of 2 hours in the insanely digestible form of: movies. The movie industry is worth 95 billion dollars in the US alone, and indeed there is a great demand for quality movies. Though it is not easily apparent to tell what makes a movie great, there are some basic data that might help determine some of the factors of a great movie. We decided to try and tackle this heavy yet essential question. What factors might help make a movie successful? Throughout this project we can consider this question through the lens of a potential movie investor.
 
 This dataset was scraped from IMDb (Internet Movie Database). There are 6820 movies in the dataset (220 movies per year, 1986-2016). Each movie has the following attributes:
-`budget`: the budget of a movie. Some movies don't have this, so it appears as 0.  `company`: the production company.  `director`: the director.  `genre`: main genre of the movie.  `gross`: revenue of the movie.  `name`: name of the movie.  `rating`: rating of the movie (R, PG, etc.).  `released`: release date (YYYY-MM-DD).  `runtime`: duration of the movie.  `score`: IMDb user rating.  `votes`: number of user votes.  `star`: main actor/actress.  `writer`: writer of the movie.  `year`: year of release.
+`budget`: the budget of a movie. Some movies don't have this, so it appears as 0. `genre`: main genre of the movie. `gross`: revenue of the movie.  `rating`: rating of the movie (R, PG, etc.). `runtime`: duration of the movie.  `score`: IMDb user rating.  `votes`: number of user votes.
 
-We will explore the factors that make a movie successful through examining the effects of our variaables of interest: `gross`, `budget`, `genre`, `rating`,`score` `votes`, and `runtime` for individual movie. 
-
-First we will explore missingness in our dataset. 
-```{r missingness, message = F, warning = F, echo = F}
-gg_miss_fct(x = data, fct = genre)
-```
+First we will explore missingness in our dataset (see appendix).
 
 The dataset includes movies that haven't been published yet (which causes a missing gross value). In our project we are considering gross revenue of a movie as the defining indicator of success. Considering that, we removed all observations that haven't been published yet or are missing gross values, because we are interested only in movies with a quantitative measure of success. 
 
@@ -43,7 +38,7 @@ data <- data %>%
 ```
 
 ## The Predictor Variables & The Response Variable
-We will use the `budget`, `genre`, `rating`,`score` `votes`, `runtime`, and `country` variables as predictors. Among them, `budget`, `score` `votes`, and `runtime` are numerical variables, while `genre`, `rating`, and `country` are categorical variables. As described earlier, the `gross` numerical variable is our response variable. 
+We will use the `budget`, `genre`, `rating`, `score`, `votes`, `runtime`, and `country` variables as predictors. Among them, `budget`, `score` `votes`, and `runtime` are numerical variables, while `genre`, `rating`, and `country` are categorical variables. As described earlier, the `gross` numerical variable is our response variable. 
 
 1. Summary of the `gross` variable: 
 ```{r vis-gross, warning = F, message = F, echo = F}
@@ -82,7 +77,7 @@ ggplot(data = data, aes(x=budget, y = gross, color = rating))+
   geom_smooth(fill=NA) +
   theme(legend.key.size = unit(0.3, "cm")) +
   facet_wrap(~ genre)+
-  ggtitle("Relationship between Budget and Gross by Rating across Genres") +
+  ggtitle("Relationship between Budget and Gross by Rating") +
   xlab("Budget") +
   ylab("Gross")+
   scale_color_discrete(name = "Rating", guide = guide_legend(override.aes = list(size = 1)))+
@@ -91,7 +86,7 @@ ggplot(data = data, aes(x=budget, y = gross, color = rating))+
 We observe that the relationship between budget and gross is vastly different across genres: action, adventure, animation movies have a steep slope and generally high budget ranges, with outliers which have exceedingly high budget and relatively high gross values. Noticeably, there are also a lot more movies in these three categories, with the most in action. On the other hand, genres such as horror, mystery and romance have a visibly flatter slope, which corresponds to the industry knowledge that certain genres are more conducive to low-budget film making than others, even when provided with additional funding. Thus, we're interested in further exploring the relationship between budget, genre, and success.
 
 ## EDA: Visualizatioins and Summary Statistics
-The dataset contains many interesting variables that we want to explore fully. We will first do some elementary exploratory data analysis on our datasets to show potential insights that we can explore further
+The dataset contains many interesting variables that we want to explore fully. We will first do some elementary exploratory data analysis on our datasets to show potential insights that we can explore further. Main effects are described here, additional relationships described in appendix.
 ```{r numeric-dist, message = F, warning = F, echo = F}
 ggplot(data = data) + 
   geom_boxplot(aes(y = score, color = genre)) +
@@ -104,32 +99,9 @@ ggplot(data = data) +
        color = "Genre")
 
 ```
-As can be seen, the score variable is relatively unskewed, whereas the votes, budget, and runtime variables are heavily positively-skewed. 
+As can be seen, the score variable is relatively unskewed, whereas the votes, budget, and runtime variables are heavily positively-skewed (refer to appendix). 
 
-```{r interesting-relationships, message = F, warning = F, echo = F, fig.dim = c(4, 3)}
-data2 <- data %>% 
-  mutate(log_votes = log(votes)) 
-
-ggplot(data = data, aes(x = runtime, y = gross)) + 
-  geom_point() +
-  labs(title = "Runtime has no relationship with Gross")
-
-data2 <- data %>% 
-  mutate(log_votes = log(votes)) 
-
-ggplot(data = data2, aes(x = log_votes, y = score)) + 
-  geom_point() +
-  labs(title = "Log of votes has a converging, positive relationship with Score")
-```
-
-```{r correlation-matrix, message = F, warning = F, echo = F, fig.dim = c(3, 3)}
-
-numeric_data <- data |> 
-  select("score", "votes", "budget", "gross", "runtime")
-corrplot(cor(numeric_data))
-
-```
-As can be seen, we have some correlated variables between our predictor variables, but none are particularly strong (0.8+) so we don't have to remove any of these predictor variables on the basis of correlation for our later models. Though there seem to be no particularly strong correlations between predictor variables, the strongest correlation is between votes and score. We may consider adding this into our model because it also fits with our domain knowledge that a movie that is rated by more people might generally have a higher score because, in our experience, people are more motivated to rate a movie they enjoy than one they dislike. 
+We have some correlated variables between our predictor variables, but none are particularly strong (0.8+) so we don't have to remove any of these predictor variables on the basis of correlation for our later models. Though there seem to be no particularly strong correlations between predictor variables, the strongest correlation is between votes and score. We may consider adding this into our model because it also fits with our domain knowledge that a movie that is rated by more people might generally have a higher score because, in our experience, people are more motivated to rate a movie they enjoy than one they dislike. 
 
 ## Methodology
 As a potential movie investor, we're obviously curious about the prediction of movies' success, and the factors that lead to success. Therefore, we want to explore the following topics in detail in order for us to be better investors: 1) Prediction of movies' gross value 2) the factors that affect the success of the movie. Some of the methods by which we are going to tackle this is through linear regression, residual plots, linear mixed models, and repeated k-fold validation.
@@ -147,53 +119,17 @@ rmse(m1_aug, truth = `log_gross`, estimate = .fitted)
 ```
 We've gained the equation of $log\_gross = 1.65 + 0.48 * log\_budget -0.14 * score + 0.74 * votes +0.62 * runtime -0.86 * country\_Aruba -0.69 * country\_Asutria .... -1.31* ratingG -2.69*ratingNC-17 ... + 0.36 * genre\_Horror -0.2 * genre\_Mystery$. 
 
-```{r linear-reg-variables, message = F, warning = F, echo = F, result = F}
+```{r linear-reg-variables, message = F, warning = F, echo = F, results = F}
 m1 <- lm(log_gross ~ log(budget) + score + log(votes) + log(runtime) + genre + 
            rating + country, data = data)
 summary(m1)
 ```
 
-# Residual plots/Assumptions
-```{r residual-plot, message = F, warning = F, echo = F}
-ggplot(m1_aug, aes(x = .fitted, y = .resid)) + 
-  geom_point() + 
-  geom_hline(yintercept = 0, color = "darkred") + 
-  labs(x = "Fitted (predicted) value", y = "Residual") + 
-  theme_bw()
-
-ggplot(m1_aug, aes(sample = .resid)) +
-  stat_qq() + 
-  stat_qq_line() + 
-  theme_bw() + 
-  labs(x = "Theoretical quantiles", 
-       y = "Sample quantiles")
-```
-We may assume that each movie is independent of each other. We can see that the linear assumption is violated since the data is not symmetrically distributed observations around the horizontal axis. The constant variance and normality assumptions are not satisfied from the above graph. Even after log transforming our gross response variable to fix the normality, the constant variance condition was still not met. The validity of our model results are thus going to be not perfectly reliable.
+#Assumptions
+We may assume that each movie is independent of each other. We can see that the linear assumption is violated since the data is not symmetrically distributed observations around the horizontal axis (see appendix). It is visible that the constant variance and normality assumptions are not satisfied from our plots. Even after log transforming our gross response variable to fix the normality, the constant variance condition was still not met. The validity of our model results are thus going to be not perfectly reliable.
 
 ## Linear Mixed Model & Random Effect
-Because variables such as genre, rating, and country likely have some variance in their effect on the model across their categories, we decided to create random effects for these variables. Our fixed effects are ones which have constant effects on the model which doesn't change for different "categories", namely budget, score, votes, and runtime. We created this table to summarize our results from linear mixed model (since the original output is too long)  
-```{r random-effect, message = F, warning = F, echo = F}
-data = data.frame(Groups=c('country', 'genre', 'rating', 'residual'), 
-                  variance=c(0.20, 0.08, 1.16, 1.85),
-                  std=c(0.44, 0.29, 1.07, 1.36))
-  
-# display
-data
-
-```
-```{r random-effect, message = F, warning = F, echo = F}
-data = data.frame(Groups=c('budge', 'score', 'votes', 'runtime'), 
-                  estimate=c(0.16, 0.15, 0.002,0.006),
-                  stddev=c(0.06, 0.02, 0.00, 0.01),
-                  tvalue=c(27.114, 5.411, 20.319, 5.041))
-  
-# display
-data
-```
-
-
-
-
+Because variables such as genre, rating, and country likely have some variance in their effect on the model across their categories, we decided to create random effects for these variables. Our fixed effects are ones which have constant effects on the model which doesn't change for different "categories", namely budget, score, votes, and runtime.
 
 ```{r random-effect, message = F, warning = F, echo = F, results = F}
 library(lme4)
@@ -201,6 +137,12 @@ m4 <- lm(log_gross ~ budget + genre + rating + score + votes + runtime + country
 m5 <- lmer(log_gross ~ 1 + budget + (1 | genre) + (1 | rating) + score + votes + runtime + (1 | country), data = data)
 summary(m4)$coef
 summary(m5)
+
+r.rmse4 <- sqrt(mean(residuals(m4)^2))
+r.rmse5 <- sqrt(mean(residuals(m5)^2))
+
+m4_aug <- augment(m4)
+rmse(m4_aug, truth = `log_gross`, estimate = .fitted)
 
 ```
 While adjusting for the random intercept based on country variable and holding all other variables constant, we noticed that the estimated variance is 0.1623 which means that all the country-specific intercepts are distributed around the model's overall intercept within estimated variance of 0.1623. Given that our gross unit is log dollars, and our estimated variance is quite small, we may expect that the random effects of the country on our model is relatively similar. In terms of our interest in knowing whether a movie is successful or not, production of country may not be a big effect on the movie's success.
@@ -287,7 +229,7 @@ We choose to use linear regression model since the RMSE result shows that it per
 
 ## Sensitivity Matrix
 We're curious about the sensitivity, specificity, positive and negative predicted values. In order to make log_gross variable binary, we convert it into "Successful Movies" (gross >= mean_gross) and "Not Successful Movies" (gross < mean_gross)
-```{r matrix, message = F, warning = F, echo = F, results = F}
+```{r matrix, message = F, warning = F, echo = F}
 library(dplyr)
 library(MASS)
 data <- data %>%
@@ -315,7 +257,7 @@ Finally, we predicted the results for a recent, hugely popular movie known as Av
 ## Limitations
 Our dataset was created from a compilation of scraped data from IMDb, a database for films. The data arbitrarily had 220 movies per year, it is difficult to examine if there was random selection for these 220 movies or if there was some selection bias in the scraping process. For variables with missingness such as budget (with 28%) it is somewhat unlikely that the data was MCAR (perhaps there was survivorship bias, where movies with higher budget had a higher chance of having published budgets). A better way to deal with missing variables was the process of imputation, which should be explored further.
 
-In our predictor variables there are likely to be correlated variables that weren’t fully considered (particularly any interaction effect such as two-way, or even four-way, like perhaps between budget, votes, rating, and score). Including such interaction effects would've led to increased model complexity and less easily interpretable results, however
+In our predictor variables there are likely to be correlated variables that weren’t fully considered (particularly any interaction effect such as two-way, or even four-way, like perhaps between budget, votes, rating, and score). Including such interaction effects would've led to increased model complexity and less easily interpretable results, however this should be better explored in the future.
 
 We didn’t include the variables such as director, actors, and company in our variables of interest. If we had included these, we would have random effects for correlated variables like director, actors, or company. For these variables however  it would have created too many different effects (there were thousands of directors and actors, many different companies too). Because the director/actors are not very generalizable this would have led to misleading predictions as well. Additionally, for our numeric variables such as budget and rating, it would have been a good idea to scale our predictor variables so our model’s coefficients could have been standardized. Future analysis could consider standardizing the numeric variables by subtracting means and dividing by standard deviations to create more readily comparable coefficients. 
 
@@ -330,6 +272,62 @@ https://stackoverflow.com/questions/13646654/root-mean-square-error-in-r-mixed-e
 
 https://psyarxiv.com/wc45u/
 
+## Appendix
+This dataset was scraped from IMDb (Internet Movie Database). There are 6820 movies in the dataset (220 movies per year, 1986-2016). Each movie has the following attributes:
+`budget`: the budget of a movie. Some movies don't have this, so it appears as 0.  `company`: the production company.  `director`: the director.  `genre`: main genre of the movie.  `gross`: revenue of the movie.  `name`: name of the movie.  `rating`: rating of the movie (R, PG, etc.).  `released`: release date (YYYY-MM-DD).  `runtime`: duration of the movie.  `score`: IMDb user rating.  `votes`: number of user votes.  `star`: main actor/actress.  `writer`: writer of the movie.  `year`: year of release.
 
+```{r f1, message = F, warning = F, echo = F}
+data2 <- data %>% 
+  mutate(log_votes = log(votes)) 
+
+ggplot(data = data, aes(x = runtime, y = gross)) + 
+  geom_point() +
+  labs(title = "Runtime has no relationship with Gross",
+       x = "Runtime (min)", y = "Gross ($)")
+
+data2 <- data %>% 
+  mutate(log_votes = log(votes)) 
+
+ggplot(data = data2, aes(x = log_votes, y = score)) + 
+  geom_point() +
+  labs(title = "Log of votes has a converging positive relationship with Score",
+       x = "Log of Votes", y = "Score out of 10")
+```
+
+
+
+```{r f2, message = F, warning = F, echo = F}
+ggplot(data = data) + 
+  geom_boxplot(aes(y = votes, color = genre)) +
+  labs(title = "Positive-skewed Votes", 
+       color = "Genre")
+
+ggplot(data = data) + 
+  geom_boxplot(aes(y = runtime, color = genre)) +
+  labs(title = "Positive-skewed Runtime", 
+       color = "Genre")
+```
+
+
+```{r residual-plot, message = F, warning = F, echo = F}
+ggplot(m1_aug, aes(x = .fitted, y = .resid)) + 
+  geom_point() + 
+  geom_hline(yintercept = 0, color = "darkred") + 
+  labs(x = "Fitted (predicted) value", y = "Residual") + 
+  theme_bw()
+
+ggplot(m1_aug, aes(sample = .resid)) +
+  stat_qq() + 
+  stat_qq_line() + 
+  theme_bw() + 
+  labs(x = "Theoretical quantiles", 
+       y = "Sample quantiles")
+```
+
+
+```{r missingness, message = F, warning = F, echo = F}
+data <- read_csv("data/movies.csv")
+gg_miss_fct(x = data, fct = genre)
+```
 
 
