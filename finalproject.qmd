@@ -171,7 +171,29 @@ ggplot(m1_aug, aes(sample = .resid)) +
 We may assume that each movie is independent of each other. We can see that the linear assumption is violated since the data is not symmetrically distributed observations around the horizontal axis. The constant variance and normality assumptions are not satisfied from the above graph. Even after log transforming our gross response variable to fix the normality, the constant variance condition was still not met. The validity of our model results are thus going to be not perfectly reliable.
 
 ## Linear Mixed Model & Random Effect
-Because variables such as genre, rating, and country likely have some variance in their effect on the model across their categories, we decided to create random effects for these variables. Our fixed effects are ones which have constant effects on the model which doesn't change for different "categories", namely budget, score, votes, and runtime.
+Because variables such as genre, rating, and country likely have some variance in their effect on the model across their categories, we decided to create random effects for these variables. Our fixed effects are ones which have constant effects on the model which doesn't change for different "categories", namely budget, score, votes, and runtime. We created this table to summarize our results from linear mixed model (since the original output is too long)  
+```{r random-effect, message = F, warning = F, echo = F}
+data = data.frame(Groups=c('country', 'genre', 'rating', 'residual'), 
+                  variance=c(0.20, 0.08, 1.16, 1.85),
+                  std=c(0.44, 0.29, 1.07, 1.36))
+  
+# display
+data
+
+```
+```{r random-effect, message = F, warning = F, echo = F}
+data = data.frame(Groups=c('budge', 'score', 'votes', 'runtime'), 
+                  estimate=c(0.16, 0.15, 0.002,0.006),
+                  stddev=c(0.06, 0.02, 0.00, 0.01),
+                  tvalue=c(27.114, 5.411, 20.319, 5.041))
+  
+# display
+data
+```
+
+
+
+
 
 ```{r random-effect, message = F, warning = F, echo = F, results = F}
 library(lme4)
@@ -179,12 +201,6 @@ m4 <- lm(log_gross ~ budget + genre + rating + score + votes + runtime + country
 m5 <- lmer(log_gross ~ 1 + budget + (1 | genre) + (1 | rating) + score + votes + runtime + (1 | country), data = data)
 summary(m4)$coef
 summary(m5)
-
-r.rmse4 <- sqrt(mean(residuals(m4)^2))
-r.rmse5 <- sqrt(mean(residuals(m5)^2))
-
-m4_aug <- augment(m4)
-rmse(m4_aug, truth = `log_gross`, estimate = .fitted)
 
 ```
 While adjusting for the random intercept based on country variable and holding all other variables constant, we noticed that the estimated variance is 0.1623 which means that all the country-specific intercepts are distributed around the model's overall intercept within estimated variance of 0.1623. Given that our gross unit is log dollars, and our estimated variance is quite small, we may expect that the random effects of the country on our model is relatively similar. In terms of our interest in knowing whether a movie is successful or not, production of country may not be a big effect on the movie's success.
