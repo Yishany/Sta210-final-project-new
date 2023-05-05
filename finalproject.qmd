@@ -91,8 +91,7 @@ ggplot(data = data, aes(x=budget, y = gross, color = rating))+
 We observe that the relationship between budget and gross is vastly different across genres: action, adventure, animation movies have a steep slope and generally high budget ranges, with outliers which have exceedingly high budget and relatively high gross values. Noticeably, there are also a lot more movies in these three categories, with the most in action. On the other hand, genres such as horror, mystery and romance have a visibly flatter slope, which corresponds to the industry knowledge that certain genres are more conducive to low-budget film making than others, even when provided with additional funding. Thus, we're interested in further exploring the relationship between budget, genre, and success.
 
 ## EDA: Visualizatioins and Summary Statistics
-The dataset contains many interesting variables that we want to explore fully. We will first do some elementary exploratory data analysis on our datasets to show potential insights that we can explore further.
-
+The dataset contains many interesting variables that we want to explore fully. We will first do some elementary exploratory data analysis on our datasets to show potential insights that we can explore further
 ```{r numeric-dist, message = F, warning = F, echo = F}
 ggplot(data = data) + 
   geom_boxplot(aes(y = score, color = genre)) +
