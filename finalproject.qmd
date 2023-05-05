@@ -256,18 +256,15 @@ Null hypothesis: $p_1 = 0$ There isn't sufficient evidence to suggest that budge
 Alternative hypothesis: $p_1 ≠ 0$ There is sufficient evidence to suggest that budget is associated with movies' gross, while controlling for all of the variables.
 
 We use significance level of 0.05. Since the t-statistics is 30.26 and the p-value is < 2e-16 which is much smaller than our significance level, so we reject the null hypothesis since there's sufficient evidence, and thus there's sufficient evidence to suggest to log(budget) does have an effect on the success of the movies (log(gross)).
-
-In terms of qualitatively addressing this issue: in our model, we know that every $1$ million increase in our budget, the gross value is expected to increase by $e^{cc}$ dollars.
-
 ## Interested Hypothesis Test 2:
 Aim 2: Is there evidence to suggest that log(Score) has an effect on the success of the movies?
 Null hypothesis:  $p_2 = 0$ There isn't sufficient evidence to suggest that Score is associated with movies' gross, while controlling for all of the variables.
 Alternative hypothesis: $p_2 ≠ 0$ There is sufficient evidence to suggest that Score is associated with movies' gross, while controlling for all of the variables.
 
-We use significance level of 0.05. Since the t-statistics is -4.537 and the p-value is 5.84e-06 which is much smaller than our significance level, so we reject the null hypothesis since there's sufficient evidence, and thus there's sufficient evidence to suggest to genre does have an effect on the success of the movies. 
+We use significance level of 0.05. Since the t-statistics is -4.537 and the p-value is 5.84e-06 which is much smaller than our significance level, so we reject the null hypothesis since there's sufficient evidence, and thus there's sufficient evidence to suggest to score does have an effect on the success of the movies. 
 
 ## Summary based on Hypothesis: 
-Based on our previous two hypothesis, we noticed that XXXXX. 
+We choose to use linear regression model since the RMSE result shows that it performs better than the other model. In terms of qualitatively addressing this issue: in our model, we expect to see that every $1$ million increase in our budget, the gross value is expected to increase by $e^{0.5} = 1.648$ million dollars; every $1$ point increase in our score, the gross value is expected to increase by $e^{-0.525} = 0.59$ million dollars. Through our hypothesis tests, we also concluded that both budge and score has an effect on the success of the movies. 
 
 ## Sensitivity Matrix
 We're curious about the sensitivity 
