@@ -138,7 +138,7 @@ As a potential movie investor, we're obviously curious about the prediction of m
 Gross revenue is a continuous response variable, so we will first examine a linear regression model for our data.  Since there are two many country variables and so does rating, we'll omit writing all the coefficient for all these variables in our liear regression result. 
 
 ```{r linear-reg-variables, message = F, warning = F, echo = F, results = F}
-m1 <- lm(log_gross ~ log(budget) + score + log(votes) + log(runtime) + genre + 
+m1 <- lm(log_gross ~ log(budget) + log(score) + log(votes) + log(runtime) + genre + 
            rating + country, data = data)
 m1_aug <- augment(m1)
 summary(m1)
@@ -255,7 +255,7 @@ Question 1: Is there evidence to suggest that log(Budget) has an effect on the s
 Null hypothesis: $p_1 = 0$ There isn't sufficient evidence to suggest that budget is associated with movies' gross, while controlling for all of the variables.
 Alternative hypothesis: $p_1 ≠ 0$ There is sufficient evidence to suggest that budget is associated with movies' gross, while controlling for all of the variables.
 
-We use significance level of 0.05. Since the t-statistics is 23.227 and the p-value is < 2e-16 which is much smaller than our significance level, so we reject the null hypothesis since there's sufficient evidence, and thus there's sufficient evidence to suggest to log(budget) does have an effect on the success of the movies (log(gross)).
+We use significance level of 0.05. Since the t-statistics is 30.26 and the p-value is < 2e-16 which is much smaller than our significance level, so we reject the null hypothesis since there's sufficient evidence, and thus there's sufficient evidence to suggest to log(budget) does have an effect on the success of the movies (log(gross)).
 
 In terms of qualitatively addressing this issue: in our model, we know that every $1$ million increase in our budget, the gross value is expected to increase by $e^{cc}$ dollars.
 
@@ -264,11 +264,12 @@ Aim 2: Is there evidence to suggest that log(Score) has an effect on the success
 Null hypothesis:  $p_2 = 0$ There isn't sufficient evidence to suggest that Score is associated with movies' gross, while controlling for all of the variables.
 Alternative hypothesis: $p_2 ≠ 0$ There is sufficient evidence to suggest that Score is associated with movies' gross, while controlling for all of the variables.
 
-We use significance level of 0.05. Since the t-statistics is 23.227 and the p-value is 3.06e-09 which is much smaller than our significance level, so we reject the null hypothesis since there's sufficient evidence, and thus there's sufficient evidence to suggest to genre does have an effect on the success of the movies. 
+We use significance level of 0.05. Since the t-statistics is -4.537 and the p-value is 5.84e-06 which is much smaller than our significance level, so we reject the null hypothesis since there's sufficient evidence, and thus there's sufficient evidence to suggest to genre does have an effect on the success of the movies. 
 
 ## Summary based on Hypothesis: 
 Based on our previous two hypothesis, we noticed that XXXXX. 
 
+## Sensitivity Matrix
 We're curious about the sensitivity 
 ```{r matrix, message = F, warning = F, echo = F, results = F}
 library(dplyr)
@@ -286,7 +287,6 @@ m9 <- m9 %>%
 table(m9$pred_leg, m9$Successful)
 ```
 The sensitivity is 2974/(2974+ )= ; the specificity is 49/(2400+49) =; positive predicted value is 2974/(2400+2974) = ; and the negative predicted value is 49/(49+0) = 1.
-Gross revenue is a continuous response variable, so we will first examine a linear regression model for our data. 
 
 ## Results
 Explain the reasoning for the type of model you’re fitting, predictor variables considered for the model including any interactions. Additionally, show how you arrived at the final model by describing the model selection process, interactions considered, variable transformations (if needed), assessment of conditions and diagnostics, and any other relevant considerations that were part of the model fitting process.
