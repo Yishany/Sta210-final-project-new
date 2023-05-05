@@ -28,8 +28,8 @@ This dataset was scraped from IMDb (Internet Movie Database). There are 6820 mov
 
 We will explore the factors that make a movie successful through examining the effects of our variaables of interest: `gross`, `budget`, `genre`, `rating`,`score` `votes`, and `runtime` for individual movie. 
 
-First we will explore missingness in our dataset. ????? 
-```{r missingness, message = F, warning = F, echo = F, fig.dim = c(4,3)}
+First we will explore missingness in our dataset. 
+```{r missingness, message = F, warning = F, echo = F}
 gg_miss_fct(x = data, fct = genre)
 ```
 
@@ -137,7 +137,7 @@ As a potential movie investor, we're obviously curious about the prediction of m
 # Linear Regression of all variables
 Gross revenue is a continuous response variable, so we will first examine a linear regression model for our data.  Since there are two many country variables and so does rating, we'll omit writing all the coefficient for all these variables in our liear regression result. 
 
-```{r linear-reg-variables, message = F, warning = F, echo = F, results = F}
+```{r lin-reg-variables, message = F, warning = F, echo = F, results = F}
 m1 <- lm(log_gross ~ log(budget) + log(score) + log(votes) + log(runtime) + genre + 
            rating + country, data = data)
 m1_aug <- augment(m1)
@@ -267,7 +267,7 @@ We use significance level of 0.05. Since the t-statistics is -4.537 and the p-va
 We choose to use linear regression model since the RMSE result shows that it performs better than the other model. In terms of qualitatively addressing this issue: in our model, we expect to see that every $1$ million increase in our budget, the gross value is expected to increase by $e^{0.5} = 1.648$ million dollars; every $1$ point increase in our score, the gross value is expected to increase by $e^{-0.525} = 0.59$ million dollars. Through our hypothesis tests, we also concluded that both budge and score has an effect on the success of the movies. 
 
 ## Sensitivity Matrix
-We're curious about the sensitivity 
+We're curious about the sensitivity, specificity, positive and negative predicted values.
 ```{r matrix, message = F, warning = F, echo = F, results = F}
 library(dplyr)
 library(MASS)
@@ -289,16 +289,29 @@ The sensitivity is 2974/(2974+ )= ; the specificity is 49/(2400+49) =; positive 
 Explain the reasoning for the type of model you’re fitting, predictor variables considered for the model including any interactions. Additionally, show how you arrived at the final model by describing the model selection process, interactions considered, variable transformations (if needed), assessment of conditions and diagnostics, and any other relevant considerations that were part of the model fitting process.
 
 ## Discussion & Limitations 
-Summary + statistical arguments to support my conclusions + future limitations/future ideads
+The broad objective of this project is to try to discern what factors might be correlated with success in the film industry. We learned that many numeric data surrounding movies, such as gross, votes, budget, and runtime were heavily right-skewed. Along that line, after transforming gross (our measure of success) in order to follow normality assumptions, we found that the log of budget indeed has a directly related, significant effect on the success of a movie. We also found that score also had a significant effect on the success of a movie. 
 
-Variable selection, specifically the lasso for categorical variables with 2+ levels,
-Rescaling predictor variables,
-linearity assumptions,
+Determining the factors that correlate to a successful movie is purely an observational study, and not an experiment. Thus, even though the log of budget and score are correlated with successful movies, they can’t be isolated and said to causally determine the success of a movie. 
+We attempted to analyze the predictive power of our model, and used this along with root mean squared error to determine the best model for our data. This happened to be the linear model with log transformed predictor variables and gross. We thus learned that for the context of our data, having random effects for the variables country, genre, and rating did not lead to better fit. This is quite interesting, especially for country and genre of movie, since there were not too many observations per level of the variable and we assumed that different levels would have different relationships with the success of a model. We thought a mixed model would be a better fit for our data. 
+
+Finally, we predicted the results for a recent, hugely popular movie known as Avatar: The Way of Water. Avatar and Avatar 2 take the 1st and 3rd slots for highest grossing films of all time. Our model predicted that the gross would be around 800 million, as opposed to the actual gross of 2.3 billion. Though this prediction is not very accurate, we found this result to be okay because Avatar 2 had the extreme bias and imminent popularity that came with being the sequel to the highest grossing film of all time, a variable that was unaccounted for in our data. This goes to show that even if a model is made based off thousands of data entries, linear regression models predict the average effect of predictor variables, and can’t really be generalized to an individual datapoint with great predictive accuracy. 
 
 
 ## Sources
 https://towardsdatascience.com/feature-selection-in-machine-learning-using-lasso-regression-7809c7c2771a
 https://stackoverflow.com/questions/13646654/root-mean-square-error-in-r-mixed-effect-model
 https://psyarxiv.com/wc45u/
+
+## Appendix
+
+Our dataset was created from a compilation of scraped data from IMDb, a database for films. The data arbitrarily had 220 movies per year, it is difficult to examine if there was random selection for these 220 movies or if there was some selection bias in the scraping process. For variables with missingness such as budget (with 28%) it is somewhat unlikely that the data was MCAR (perhaps there was survivorship bias, where movies with higher budget had a higher chance of having published budgets). A better way to deal with missing variables was the process of imputation, which should be explored further.
+
+In our predictor variables there are likely to be correlated variables that weren’t fully considered (particularly any interaction effect beyond two-way, for example, between budget, votes, rating, and score there might’ve been a four-way interaction effect we could have included). Though including such interaction effects might’ve led to highly increased model complexity, leading to overfitting, we did not thoroughly examine the potential presence of overfitting in our project (based on our low number of predictor variables to observations (7 to 5000+). 
+
+We didn’t include the variables such as director, actors, and company in our variables of interest. If we had included these, we would have random effects for correlated variables like director, actors, or company. For these variables however  it would have created too many different effects (there were thousands of directors and actors, many different companies too). Because the director/actors are not very generalizable this would have led to misleading predictions as well. Additionally, for our numeric variables such as budget and rating, it would have been a good idea to scale our predictor variables so our model’s coefficients could have been standardized. Future analysis could consider standardizing the numeric variables by subtracting means and dividing by standard deviations to create more readily comparable coefficients. 
+
+We were planning on using LASSO selection to further identify variables of interest, however, in the context of our data considering we had categorical variables with 2+ categories (for example, country had way more than 2 categories), instead of going with common literature practices such as group lasso with dummy coding, contrast coding, or Helmert coding, we decided to treat each categorical variable as a all-or-nothing feature (where if even one level of a feature was shrunk to zero, that the entire categorical variable should be removed), which unsurprisingly suggested in the removal of all the categorical variables from our model. For future analysis, a variable selection with group Lasso would seem appropriate to better create a meaningful model. We disregarded the results of our LASSO approach of variable selection however because again, we had such a low ratio of predictor variables to observations that we didn’t need to worry much about overfitting.
+Our models failed the constant variance assumption of linearity as well as normality, so our residuals suffered from heteroscedasticity. In essence, our linear model coefficients, p values, and confidence intervals may not have been accurate for our explanatory variables. We attempted to adjust the normality by log scaling our response variable, gross, which resulted in better normality, however even after trying to scale by various means, constant variance was still somewhat violated. A future model should aim to find a transformation that results in constant variance for the model.
+
 
 
