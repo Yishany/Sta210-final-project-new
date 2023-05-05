@@ -270,12 +270,12 @@ We use significance level of 0.05. Since the t-statistics is -4.537 and the p-va
 We choose to use linear regression model since the RMSE result shows that it performs better than the other model. In terms of quantitatively addressing this issue: in our model, we expect to see that every $1$ million increase in our budget, the gross value is expected to increase by $e^{0.5} = 1.648$ million dollars; every $1$ point increase in our score, the gross value is expected to increase by $e^{-0.525} = 0.59$ million dollars. Through our hypothesis tests, we also concluded that both budget and score has an effect on the success of the movies. 
 
 ## Sensitivity Matrix
-We're curious about the sensitivity, specificity, positive and negative predicted values.
+We're curious about the sensitivity, specificity, positive and negative predicted values. In order to make log_gross variable binary, we convert it into "Successful Movies" (gross >= mean_gross) and "Not Successful Movies" (gross < mean_gross)
 ```{r matrix, message = F, warning = F, echo = F, results = F}
 library(dplyr)
 library(MASS)
 data <- data %>%
-  mutate(Successful = if_else(log_gross >= 17, 1, 0))
+  mutate(Successful = if_else(log_gross >= 17.2, 1, 0))
 m9 <- lm(Successful ~ budget + genre + rating + score + runtime, data = data)
 m9 <- augment(m9)
 
@@ -286,7 +286,7 @@ m9 <- m9 %>%
 
 table(m9$pred_leg, m9$Successful)
 ```
-The sensitivity is 2974/(2974+ )= ; the specificity is 49/(2400+49) =; positive predicted value is 2974/(2400+2974) = ; and the negative predicted value is 49/(49+0) = 1.
+The sensitivity is 2974/(2974+ 0)= 1; the specificity is 19/(2430+19) = 0.007; positive predicted value is 2974/(2430+2974) = 0.55; and the negative predicted value is 19/(19+0) = 1. The prevalence is 0.548, which means that 54.8% of the movies are successful, and the classifier correctly identify 100% of the successful observations. 
 
 ## Discussion
 The broad objective of this project is to try to discern what factors might be correlated with success in the film industry. We learned that many numeric data surrounding movies, such as gross, votes, budget, and runtime were heavily right-skewed. Along that line, after transforming gross (our measure of success) in order to follow normality assumptions, we found that the log of budget indeed has a directly related, significant effect on the success of a movie. We also found that score also had a significant effect on the success of a movie. 
