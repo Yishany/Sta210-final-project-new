@@ -28,7 +28,7 @@ This dataset was scraped from IMDb (Internet Movie Database). There are 6820 mov
 
 We will explore the factors that make a movie successful through examining the effects of our variaables of interest: `gross`, `budget`, `genre`, `rating`,`score` `votes`, and `runtime` for individual movie. 
 
-First we will explore missingness in our dataset.
+First we will explore missingness in our dataset. ????? 
 ```{r missingness, message = F, warning = F, echo = F, fig.dim = c(4,3)}
 gg_miss_fct(x = data, fct = genre)
 ```
@@ -43,9 +43,7 @@ data <- data %>%
 ```
 
 ## The Predictor Variables & The Response Variable
-We will use the `budget`, `genre`, `rating`,`score` `votes`, `runtime`, and `country` variables as predictors. Among them, `budget`, `score` `votes`, and `runtime` are numerical variables, while `genre`, `rating`, and `country` are categorical variables.
-
-As described earlier, the `gross` numerical variable is our response variable. 
+We will use the `budget`, `genre`, `rating`,`score` `votes`, `runtime`, and `country` variables as predictors. Among them, `budget`, `score` `votes`, and `runtime` are numerical variables, while `genre`, `rating`, and `country` are categorical variables. As described earlier, the `gross` numerical variable is our response variable. 
 
 1. Summary of the `gross` variable: 
 ```{r vis-gross, warning = F, message = F, echo = F}
@@ -137,7 +135,7 @@ As can be seen, we have some correlated variables between our predictor variable
 ## Methodology
 As a potential movie investor, we're obviously curious about the prediction of movies' success, and the factors that lead to success. Therefore, we want to explore the following topics in detail in order for us to be better investors: 1) Prediction of movies' gross value 2) the factors that affect the success of the movie. Some of the methods by which we are going to tackle this is through linear regression, residual plots, linear mixed models, and repeated k-fold validation.
 
-## Linear Regression of all variables
+# Linear Regression of all variables
 Gross revenue is a continuous response variable, so we will first examine a linear regression model for our data. We've gained the equation of XX.  
 
 ```{r linear-reg-variables, message = F, warning = F, echo = F, results = F}
@@ -149,7 +147,7 @@ summary(m1)
 rmse(m1_aug, truth = `log_gross`, estimate = .fitted)
 ```
 
-## Residual plots/Assumptions
+# Residual plots/Assumptions
 ```{r residual-plot, message = F, warning = F, echo = F}
 ggplot(m1_aug, aes(x = .fitted, y = .resid)) + 
   geom_point() + 
