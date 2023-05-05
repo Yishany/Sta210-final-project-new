@@ -147,7 +147,7 @@ rmse(m1_aug, truth = `log_gross`, estimate = .fitted)
 ```
 We've gained the equation of $log\_gross = 1.65 + 0.48 * log\_budget -0.14 * score + 0.74 * votes +0.62 * runtime -0.86 * country\_Aruba -0.69 * country\_Asutria .... -1.31* ratingG -2.69*ratingNC-17 ... + 0.36 * genre\_Horror -0.2 * genre\_Mystery$. 
 
-```{r linear-reg-variables, message = F, warning = F, echo = F}
+```{r linear-reg-variables, message = F, warning = F, echo = F, result = F}
 m1 <- lm(log_gross ~ log(budget) + score + log(votes) + log(runtime) + genre + 
            rating + country, data = data)
 summary(m1)
@@ -198,7 +198,7 @@ r.rmse5 <- sqrt(mean(residuals(m5)^2))
 r.rmse4
 r.rmse5
 ```
-Our linear model has a smaller RMSE than our mixed effects model: 1.3523 < 1.3575. The difference is very minor, however, we conclude that our linear model is a better fit for our data and has better performance. 
+Our linear model has a smaller RMSE than our mixed effects model: 0.3523 < 0.3575. The difference is very minor, however, we conclude that our linear model is a better fit for our data and has better performance. 
 
 ## Predicting moves' gross
 In order to make our findings applicable for future use, we'd like to make a prediction on movies' gross based on our current variables. However, we also want to test to see if scaling our predictor variables happens to create a more predictive model than without scaling. We thought that even though a linear model with log transformed predictors (for the ones that are skewed) would fit our data better, it might not necessarily be a better predictive model. 
@@ -299,7 +299,9 @@ Finally, we predicted the results for a recent, hugely popular movie known as Av
 
 ## Sources
 https://towardsdatascience.com/feature-selection-in-machine-learning-using-lasso-regression-7809c7c2771a
+
 https://stackoverflow.com/questions/13646654/root-mean-square-error-in-r-mixed-effect-model
+
 https://psyarxiv.com/wc45u/
 
 ## Appendix
